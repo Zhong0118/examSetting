@@ -1,0 +1,541 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*::-webkit-scrollbar {
+    width: 0.4rem;
+    height: 0.4rem;
+}
+
+*::-webkit-scrollbar-thumb {
+    border-radius: 0.67rem;
+    box-shadow: inset 0 0 0.33rem rgba(215, 198, 198, 0.422);
+    background-color: #918b8b;
+}
+
+*::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+}
+
+:root,
+[data-theme] {
+    color: var(--daisyui-color);
+}
+
+:root[data-theme="emerald"] {
+    --daisyui-color: #333c4d;
+    /*bg-slate-50*/
+    /*bg-sky-100*/
+
+    --basic1: #93aec1;
+    --basic2: #9dbdba;
+    --basic3: #f8b042;
+    --basic4: #ec6a52;
+    --basic5: #f3b7ad;
+
+    --panel-color: #f2f2f2;
+    --panel2-color: #F0F9FF;
+
+    --admin-thead: #35495b;
+    --color-222: #2f3536;
+
+    --small-text: #AEB7C5;
+    --small-doc: #F4F6F7;
+
+
+    --login: rgb(22, 30, 49);
+    --login-b: rgb(45, 50, 80);
+    --login1: rgb(100, 108, 154);
+    --login2: rgb(66, 71, 105);
+    --login3: rgb(249, 177, 122);
+    --login4: rgb(113, 123, 185);
+
+    --color-whole: #f2f2f2;
+    --primary-color: #0e4bf1;
+    --ai-message-bg: #eeeeee;
+    --t-color: #000;
+    --black-light-color: #707070;
+    --border-color: #e6e5e5;
+    --toggle-color: #ddd;
+    --box1-color: #4da3ff;
+    --box2-color: #ffe6ac;
+    --box3-color: #e7d1fc;
+    --title-icon-color: #fff;
+    --loader1: #cddce5;
+    --luotianyi1: #66ccff;
+    --luotianyi2: #94e1ff;
+    --luotianyi3: #c2f1ff;
+    --luotianyi4: #53b0e6;
+    --luotianyi5: #3987bf;
+    --chuyinweilai: #39c5bb;
+
+    --sky1: #40A2E3;
+    --sky2: #FFF6E9;
+    --sky3: #BBE2EC;
+    --sky4: #0D9276;
+    --land1: #88AB8E;
+    --land2: #AFC8AD;
+    --land3: #EEE7DA;
+    --land4: #F2F1EB;
+    --skin1: #F3C5C5;
+    --skin2: #C1A3A3;
+    --skin3: #886F6F;
+    --skin4: #694E4E;
+
+    --shangchuan1: #5b5b7b;
+
+    --main-color: #fff;
+    --input-color: #fff;
+    --text-color: #4d4d4d; /* 白色 */
+    --title-background-color: #333;
+    --title-border: #cccccc;
+    --title-color: aliceblue;
+    --hamburger-hover: #ab8e8e;
+    --hamburger-hover-shadow: rgba(0, 0, 0, 0.5);
+    --header-background-color: #e5e7e9;
+    --today-color: #fff;
+    --today-background-color: #ab8e8eb3;
+    --today-shadow: #999;
+    --today-active-shadow: #666;
+    --changeView-color: #734444;
+    --changeViewDrop-background-color: #f1f1f1;
+    --changeViewDrop-shadow: rgba(0, 0, 0, 0.2);
+    --changeViewDrop-a: #333333;
+    --changeViewDrop-a-hover: #e8dede;
+    --changeMonth_button-background: linear-gradient(225deg, #e6e2e2, #f2f1f1);
+    --changeMonth_button-hover: linear-gradient(225deg, #d0c9c9, #afa9a9);
+    --changeMonth_button-shadow1: #a5a0a0;
+    --changeMonth_button-shadow2: #dfd8d8;
+    --information-hover: #c7c3c3;
+    --information-hover-shadow: rgba(0, 0, 0, 0.5);
+    --information-a-hover: #0077cc;
+    --leftNav-background: #f2f3f4e7;
+    --smallCalendar-hover-border: #c0c0c0;
+    --smallCalendar-hover-shadow: rgba(152, 144, 144, 0.5);
+    --smBtn-background: linear-gradient(225deg, #b3a8a8, #f2f1f1);
+    --smBtn-active-shadow1: #f3eae2e9;
+    --smBtn-active-shadow2: #dfd8d8db;
+    --smCDayItem-color: #666666;
+    --sm-calendar-date-hover: #e1eaff;
+    --sm-date-text-color: #000000;
+    --sm-pre-next-color: #a69f9f;
+    --sm-today-border-color: #3370ff;
+    --sm-selected-color: #ffffff;
+    --weather-container-border: rgba(122, 56, 56, 60%);
+    --weather-search-box-input-color: #06283D;
+    --weather-search-box-button: #DFF6FF;
+    --weather-search-box-button-hover: #06283Ddc;
+    --week-item-border: #968585;
+    --week-item-hover: #f9f2f2f6;
+    --week-item-active: #efefef;
+    --is-passed-color: #999999;
+    --is-weekend-background: #f6e1e1;
+    --admin-search-border: #ccc;
+    --admin-search-focus: #007bff;
+    --admin-searchButton-hover: #0056b3;
+    --admin-back: #6c757d;
+    --admin-back-hover: #565e63;
+    --pagination-a: #337ab7;
+    --admin-botton-hover: #286090;
+    --admin-male: #1e1515;
+    --admin-female: #734444;
+    --admin-teacher: #020215;
+    --admin-student: rgba(5, 0, 0, 0.73);
+
+    --modal-option-blue: #00A8FF;
+    --modal-content-background: #fefefe;
+    --modal-change-info: rgba(35, 5, 5, 0.27);
+
+    --shadow-1: rgba(0, 0, 0, 0.1);
+    --color-fff: #fff;
+    --color-ddd: #ddd;
+    --color-ccc: #ccc;
+    --color-aaa: #aaa;
+    --color-333: #333;
+    --color-888: #888;
+    --color-000: #000000;
+    --color-red: #FF0000;
+    --select-hover: #f0f0f0;
+
+    --canvas-background: #f0f0f0;
+
+    --todo1: #4a90e2;
+    --todo2: #7cafdc;
+    --doing1: #e1a659;
+    --doing2: #f7cc9b;
+    --done1: #4ebc86;
+    --done2: #a4d7c6;
+    --draggable-text: #e9550c;
+    --draggable-backgound: rgba(240, 240, 240, 0.7);
+
+    --draggable-border1: #743ad5;
+    --draggable-border2: #d53a9d;
+
+    --todobutton: #4caf50;
+    --todobutton-hover: #45a049;
+    --todocreate: #337ab7;
+    --todoback: #d9534f;
+    --todoclose: #d9534f;
+    --tododelete: #f44336;
+    --tododeletehover: #c9302c;
+
+    /*base */
+    --meun: #4a90e2;
+    --meun_item: white;
+    --meun_nav_text_light: black;
+    --background_meun_nav: red;
+    --background_base_nav: red;
+    --background_base_nav_logoName: #337ab7;
+    --i_light: white;
+    --nav_user: #333;
+
+    --context-menu-background1: rgba(255, 255, 255, 0.45);
+    --context-menu-background2: rgba(255, 255, 255, 0.85);
+
+    --progress-bar-background: #DFE3EB;
+
+    --green-blue-crayola: hsl(201, 91%, 57%);
+    --prussian-blue: hsl(202, 72%, 15%);
+    --eerie-black: hsl(210, 11%, 15%);
+    --dark-orange: hsl(32, 100%, 50%);
+    --alice-blue: hsl(211, 71%, 93%);
+    --light-gray: hsl(0, 0%, 80%);
+    --indigo-dye: hsl(202, 64%, 26%);
+    --cultured-1: hsl(0, 0%, 94%);
+    --cultured-2: hsl(0, 0%, 95%);
+    --cultured-3: hsl(0, 0%, 95%);
+    --plutinum: hsl(0, 0%, 91%);
+    --black_60: hsla(0, 0%, 0%, 0.6);
+    --white: hsl(0, 0%, 100%);
+    --black: hsl(0, 0%, 0%);
+    --onyx: hsl(0, 0%, 24%);
+
+
+}
+
+:root[data-theme="dark"] {
+    --daisyui-color: #A6ADBB;
+
+    --basic1: #537391;
+    --basic2: #387060;
+    --basic3: #945418;
+    --basic4: #b3402e;
+    --basic5: #91483f;
+
+    --login: rgb(22, 30, 49);
+    --login-b: rgb(45, 50, 80);
+    --login1: rgb(100, 108, 154);
+    --login2: rgb(66, 71, 105);
+    --login3: rgb(249, 177, 122);
+    --login4: rgb(113, 123, 185);
+
+    --small-text: #dce3e8;
+    --small-doc: #577894;
+
+
+
+    --color-whole: #1C212C;
+    --primary-color: #3a3b3c;
+    --panel-color: #242526;
+    --panel2-color: #353738;
+    --ai-message-bg: #343536;
+    --t-color: #ccc;
+    --black-light-color: #ccc;
+    --border-color: #4d4c4c;
+    --toggle-color: #fff;
+    --box1-color: #3a3b3c;
+    --box2-color: #3a3c3c;
+    --box3-color: #3a3b3c;
+    --title-icon-color: #ccc;
+    --loader1: #1f1f1f;
+    --luotianyi1: #4b98bd;
+    --luotianyi2: #74aac7;
+    --luotianyi3: #95b6c2;
+    --luotianyi4: #4088b2;
+    --luotianyi5: #2c6994;
+    --chuyinweilai: #2a918a;
+    --shangchuan1: #32325c;
+    /* Sky */
+    --sky1: #3075a3; /* 深天蓝 */
+    --sky2: #b2a48b; /* 暗沙色 */
+    --sky3: #8ba0ac; /* 暗灰蓝 */
+    --sky4: #065750; /* 暗青绿 */
+
+    /* Land */
+    --land1: #50675a; /* 暗橄榄绿 */
+    --land2: #687f72; /* 暗灰绿 */
+    --land3: #a9a291; /* 暗卡其色 */
+    --land4: #bcbab0; /* 暗灰白 */
+
+    /* Skin */
+    --skin1: #a17878; /* 暗玫瑰色 */
+    --skin2: #745858; /* 暗褐色 */
+    --skin3: #554343; /* 暗赭色 */
+    --skin4: #3d2e2e; /* 暗栗色 */
+
+
+    --main-color: #4d4d4d;
+    --input-color: #5d4343;
+    --text-color: #bebeb5; /* 白色 */
+    --title-background-color: #1c1c1c; /* Dark background for titles */
+    --title-border: #444444; /* Darker border for a subtle appearance */
+    --title-color: #d0d4da; /* Lighter text color for contrast against dark background */
+    --hamburger-hover: #7c6f6f; /* Muted color for hover effect */
+    --hamburger-hover-shadow: rgba(255, 255, 255, 0.1); /* Lighter shadow for depth */
+    --header-background-color: #202428; /* Dark shade for header background */
+    --today-color: #ffffff; /* White color for contrast on dark backgrounds */
+    --today-background-color: #505050; /* Darker background for today */
+    --today-shadow: #333333; /* Dark shadow for depth */
+    --today-active-shadow: #111111; /* Even darker shadow for active state */
+    --changeView-color: #9b8d8d; /* Subdued color for change view */
+    --changeViewDrop-background-color: #2b2b2b; /* Dark background for dropdown */
+    --changeViewDrop-shadow: rgba(255, 255, 255, 0.05); /* Subtle shadow for dropdown */
+    --changeViewDrop-a: #bbbbbb; /* Light color for dropdown links */
+    --changeViewDrop-a-hover: #353535; /* Dark hover state for links */
+    --changeMonth_button-background: linear-gradient(225deg, #393939, #2f2f2f); /* Gradients in darker tones */
+    --changeMonth_button-hover: linear-gradient(225deg, #2c2c2c, #242424); /* Dark hover gradient */
+    --changeMonth_button-shadow1: #1c1c1c; /* Dark shadow for buttons */
+    --changeMonth_button-shadow2: #262626; /* Slightly lighter shadow for layered effect */
+    --information-hover: #3d3838; /* Dark hover state */
+    --information-hover-shadow: rgba(255, 255, 255, 0.1); /* Light shadow for information hover */
+    --information-a-hover: #4080ff; /* Bright color for links to stand out on hover */
+    --leftNav-background: #2a2e32; /* Dark background for navigation */
+    --smallCalendar-hover-border: #575757; /* Dark border for small calendar hover */
+    --smallCalendar-hover-shadow: rgba(200, 200, 200, 0.5); /* Lighter shadow for contrast */
+    --smBtn-background: linear-gradient(225deg, #4a4040, #3a3333); /* Dark button gradient */
+    --smBtn-active-shadow1: #2d2d2d; /* Dark shadow for button active state */
+    --smBtn-active-shadow2: #232323; /* Consistent with dark mode shadowing */
+    --smCDayItem-color: #cccccc; /* Lighter color for readability */
+    --sm-calendar-date-hover: #374151; /* Dark hover state for calendar dates */
+    --sm-date-text-color: #e0e0e0; /* Bright text color for contrast */
+    --sm-pre-next-color: #848484; /* Subdued color for prev-next buttons in dark mode */
+
+
+    --sm-today-border-color: #1A49AB; /* Darker shade of blue */
+    --sm-selected-color: #000000; /* Typically dark mode has light text, so keeping white */
+    --weather-container-border: rgba(122, 56, 56, 0.8); /* Darker and more opaque */
+    --weather-search-box-input-color: #DFF6FF; /* Lighter color for contrast */
+    --weather-search-box-button: #325A70; /* Darker button color */
+    --weather-search-box-button-hover: #06283D; /* Slightly lighter for hover effect */
+    --week-item-border: #5C3C3C; /* Darker border color */
+    --week-item-hover: #2d2d2d; /* Darker hover state */
+    --week-item-active: #1e1e1e; /* Even darker for active state */
+    --is-passed-color: #666666; /* Lighter gray for passed items */
+    --is-weekend-background: #3c2c2c; /* Darker shade for weekend */
+    --admin-search-border: #555; /* Darker border for search */
+    --admin-search-focus: #0056b3; /* Brighter color for focus to stand out */
+    --admin-searchButton-hover: #004080; /* Darker hover color */
+    --admin-back: #343a40; /* Darker back color */
+    --admin-back-hover: #23272b; /* Hover state even darker */
+    --pagination-a: #5796d2; /* Darker link color */
+    --admin-thead: #1f2a36; /* Darker table header */
+    --admin-botton-hover: #204d74; /* Darker button hover */
+    --admin-male: #262626; /* Much darker for male identifier */
+    --admin-female: #503030; /* Darker for female identifier */
+    --admin-teacher: #191d26; /* Darker for teacher identifier */
+    --admin-student: rgba(5, 5, 5, 0.73); /* Darken student identifier */
+
+    --modal-option-blue: #007ACC; /* Darker modal option blue */
+    --modal-content-background: #121212; /* Very dark grey for modal background */
+    --modal-change-info: rgba(35, 5, 5, 0.5); /* Darker and more opaque */
+
+    --shadow-1: rgba(0, 0, 0, 0.5); /* Darker shadow for depth */
+    --color-fff: #121212; /* Near black for backgrounds */
+    --color-ddd: #333; /* Darker gray for borders */
+    --color-ccc: #444; /* Even darker gray */
+    --color-aaa: #555; /* And darker... */
+    --color-333: #ddd; /* Much lighter for text */
+    --color-888: #aaa; /* Lighter gray for less prominent text */
+    --color-000: #ffffff; /* White text on dark backgrounds */
+    --color-red: #FF0000; /* Red can remain the same as it stands out on dark */
+    --select-hover: #a69191;
+
+    --canvas-background: #757575;
+
+    --todo1: #345b7b;
+    --todo2: #567d96;
+    --doing1: #a67c52;
+    --doing2: #b89a78;
+    --done1: #357f5c;
+    --done2: #60997e;
+    --draggable-text: #be8260;
+    --draggable-backgound: rgba(40, 40, 40, 0.7);
+
+    --draggable-border1: #5c3a9d;
+    --draggable-border2: #9d3a78;
+
+    --todobutton: #357a38;
+    --todobutton-hover: #2e6f2e;
+    --todocreate: #285a8f;
+    --todoback: #a63e2b;
+    --todoclose: #a63e2b;
+    --tododelete: #d32f2f;
+    --tododeletehover: #b71c1c;
+
+    --context-menu-background1: rgba(10, 20, 28, 0.2);
+    --context-menu-background2: rgba(10, 20, 28, 0.7);
+
+    --progress-bar-background: #202632;
+
+
+    --green-blue-crayola: hsl(201, 75%, 28%);
+    --prussian-blue: hsl(204, 65%, 29%);
+    --eerie-black: hsl(224, 16%, 33%);
+    --dark-orange: hsl(32, 98%, 20%);
+    --alice-blue: hsl(210, 7%, 63%);
+    --light-gray: hsl(0, 0%, 54%);
+    --indigo-dye: hsl(200, 64%, 17%);
+    --cultured-1: hsl(0, 4%, 66%);
+    --cultured-2: hsl(0, 4%, 55%);
+    --cultured-3: hsl(0, 4%, 49%);
+    --plutinum: hsl(0, 2%, 27%);
+    --black_60: hsla(0, 0%, 77%, 0.6);
+    --white: hsl(0, 0%, 17%);
+    --black: hsl(0, 0%, 97%);
+    --onyx: hsl(0, 2%, 80%);
+
+    --color-222: #505a5b;
+
+}
+
+:root[data-theme="dark"] img {
+    filter: brightness(70%) contrast(80%);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: Ubuntu, sans-serif;
+    scroll-behavior: smooth;
+    box-sizing: border-box;
+}
+
+/*字体相关*/
+.playwrite-it-moderna {
+    font-family: "Playwrite IT Moderna", cursive;
+    font-style: normal;
+}
+
+.paywrite-es-deco {
+    font-family: "Playwrite ES Deco", cursive;
+    font-style: normal;
+}
+
+.montserrat {
+    font-family: "Montserrat", sans-serif;
+    font-style: normal;
+}
+
+.playwrite-de-grund {
+    font-family: "Playwrite DE Grund", cursive;
+    font-style: normal;
+}
+
+.ubuntu {
+    font-family: "Ubuntu", sans-serif;
+    font-style: normal;
+}
+
+
+.playfair-display {
+    font-family: "Playfair Display", serif;
+    font-style: normal;
+}
+
+.exo-2 {
+    font-family: "Exo 2", sans-serif;
+    font-style: normal;
+}
+
+.shadows-into-light-regular {
+    font-family: "Shadows Into Light", cursive;
+    font-style: normal;
+}
+
+.permanent-marker-regular {
+    font-family: "Permanent Marker", cursive;
+    font-style: normal;
+}
+
+.ma-shan-zheng-regular {
+    font-family: "Ma Shan Zheng", cursive;
+    font-style: normal;
+}
+
+/*chinese*/
+.zcool-xiaowei-regular {
+    font-family: "ZCOOL XiaoWei", sans-serif;
+    font-style: normal;
+}
+
+.noto-serif-sc {
+    font-family: "Noto Serif SC", serif;
+    font-style: normal;
+}
+
+/*@font-face {*/
+/*    font-family: AlimamaDaoLiTi;*/
+/*    src: url('@/assets/fonts/AlimamaDaoLiTi.ttf');*/
+/*    font-display: swap;*/
+/*}*/
+
+/*@font-face {*/
+/*    font-family: AlimamaDongFangDaKai;*/
+/*    src: url('@/assets/fonts/AlimamaDongFangDaKai-Regular.ttf');*/
+/*    font-display: swap;*/
+/*}*/
+
+/*@font-face {*/
+/*    font-family: MiSans;*/
+/*    src: url('@/assets/fonts/MiSans-Normal.ttf');*/
+/*    font-display: swap;*/
+/*}*/
+
+/*@font-face {*/
+/*    font-family: OPPOSans;*/
+/*    src: url('@/assets/fonts/OPPOSans-Regular.ttf');*/
+/*    font-display: swap;*/
+/*}*/
+
+/*@font-face {*/
+/*    font-family: SanJiBangKaiJianTi-2;*/
+/*    src: url('@/assets/fonts/SanJiBangKaiJianTi-2.ttf');*/
+/*    font-display: swap;*/
+/*}*/
+
+/*@font-face {*/
+/*    font-family: ReeyRegular;*/
+/*    src: url('@/assets/fonts/ReeyRegular.ttf');*/
+/*    font-display: swap;*/
+/*}*/
+
+/*.alidaoli {*/
+/*    font-family: AlimamaDaoLiTi, sans-serif;*/
+/*    font-style: normal;*/
+/*}*/
+
+/*.alidongfang {*/
+/*    font-family: AlimamaDongFangDaKai, sans-serif;*/
+/*    font-style: normal;*/
+/*}*/
+
+/*.misans {*/
+/*    font-family: MiSans, sans-serif;*/
+/*    font-style: normal;*/
+/*}*/
+
+/*.opposans {*/
+/*    font-family: OPPOSans, sans-serif;*/
+/*    font-style: normal;*/
+/*}*/
+
+/*.sanjibangkaijian {*/
+/*    font-family: SanJiBangKaiJianTi-2, sans-serif;*/
+/*    font-style: normal;*/
+/*}*/
+
+/*.reeyregular {*/
+/*    font-family: ReeyRegular, sans-serif;*/
+/*    font-style: normal;*/
+/*}*/
+
