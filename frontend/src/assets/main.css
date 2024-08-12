@@ -233,7 +233,6 @@
     --small-doc: #577894;
 
 
-
     --color-whole: #1C212C;
     --primary-color: #3a3b3c;
     --panel-color: #242526;
@@ -405,7 +404,7 @@
 * {
     margin: 0;
     padding: 0;
-    font-family: Ubuntu, sans-serif;
+    font-family: OPPOSans, sans-serif;
     scroll-behavior: smooth;
     box-sizing: border-box;
 }
@@ -473,69 +472,36 @@
     font-style: normal;
 }
 
-/*@font-face {*/
-/*    font-family: AlimamaDaoLiTi;*/
-/*    src: url('@/assets/fonts/AlimamaDaoLiTi.ttf');*/
-/*    font-display: swap;*/
-/*}*/
+@font-face {
+    font-family: AlimamaDaoLiTi;
+    src: url('@/assets/fonts/AlimamaDaoLiTi.ttf');
+    font-display: swap;
+}
 
-/*@font-face {*/
-/*    font-family: AlimamaDongFangDaKai;*/
-/*    src: url('@/assets/fonts/AlimamaDongFangDaKai-Regular.ttf');*/
-/*    font-display: swap;*/
-/*}*/
+@font-face {
+    font-family: AlimamaDongFangDaKai;
+    src: url('@/assets/fonts/AlimamaDongFangDaKai-Regular.ttf');
+    font-display: swap;
+}
 
-/*@font-face {*/
-/*    font-family: MiSans;*/
-/*    src: url('@/assets/fonts/MiSans-Normal.ttf');*/
-/*    font-display: swap;*/
-/*}*/
+@font-face {
+    font-family: OPPOSans;
+    src: url('@/assets/fonts/OPPOSans-Regular.ttf');
+    font-display: swap;
+}
 
-/*@font-face {*/
-/*    font-family: OPPOSans;*/
-/*    src: url('@/assets/fonts/OPPOSans-Regular.ttf');*/
-/*    font-display: swap;*/
-/*}*/
+.alidaoli {
+    font-family: AlimamaDaoLiTi, sans-serif;
+    font-style: normal;
+}
 
-/*@font-face {*/
-/*    font-family: SanJiBangKaiJianTi-2;*/
-/*    src: url('@/assets/fonts/SanJiBangKaiJianTi-2.ttf');*/
-/*    font-display: swap;*/
-/*}*/
+.alidongfang {
+    font-family: AlimamaDongFangDaKai, sans-serif;
+    font-style: normal;
+}
 
-/*@font-face {*/
-/*    font-family: ReeyRegular;*/
-/*    src: url('@/assets/fonts/ReeyRegular.ttf');*/
-/*    font-display: swap;*/
-/*}*/
-
-/*.alidaoli {*/
-/*    font-family: AlimamaDaoLiTi, sans-serif;*/
-/*    font-style: normal;*/
-/*}*/
-
-/*.alidongfang {*/
-/*    font-family: AlimamaDongFangDaKai, sans-serif;*/
-/*    font-style: normal;*/
-/*}*/
-
-/*.misans {*/
-/*    font-family: MiSans, sans-serif;*/
-/*    font-style: normal;*/
-/*}*/
-
-/*.opposans {*/
-/*    font-family: OPPOSans, sans-serif;*/
-/*    font-style: normal;*/
-/*}*/
-
-/*.sanjibangkaijian {*/
-/*    font-family: SanJiBangKaiJianTi-2, sans-serif;*/
-/*    font-style: normal;*/
-/*}*/
-
-/*.reeyregular {*/
-/*    font-family: ReeyRegular, sans-serif;*/
-/*    font-style: normal;*/
-/*}*/
+.opposans {
+    font-family: OPPOSans, sans-serif;
+    font-style: normal;
+}
 
