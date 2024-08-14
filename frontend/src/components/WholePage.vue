@@ -8,6 +8,11 @@ import {useTitleStore} from "@/stores/title";
 import emitter from "@/utils/mitter";
 // @ts-ignore
 import router from "@/router";
+import Multiple from "@/components/answer/Multiple.vue";
+import Single from "@/components/answer/Single.vue";
+import Blank from "@/components/answer/Blank.vue";
+import Result from "@/components/answer/Result.vue";
+import Check from "@/components/answer/Check.vue";
 
 const questionStore = useQuestionStore();
 const questionNeed = ref('')
@@ -56,8 +61,20 @@ const createTopic = async () => {
       loadingInstance.close()
       const result = await response.json()
       const result_str = result.message;
-      const result_arr = result_str.split('答案解析：');
-      titleStore.setTitle({question: result_arr[0], answer: result_arr[1]})
+      const result_arr = result_str.split('\n\n');
+      const type_str = type;
+      if (type_str === '单选' || type_str === '多选') {
+        const answer = result_arr[3] + '\n' + result_arr[4];
+        const q = result_arr[1];
+        const options = result_arr[2].split('\n');
+        // @ts-ignore
+        titleStore.setTitle({type_str, answer, q, options})
+      } else {
+        const answer = result_arr[3] + '\n' + result_arr[4];
+        const q = result_arr[1];
+        // @ts-ignore
+        titleStore.setTitle({type_str, answer, q})
+      }
       emitter.emit('answer-page-setting')
     }
   } catch (e) {
@@ -68,9 +85,9 @@ const createTopic = async () => {
   }
 }
 
-function toWhole() {
+function toSingle() {
   router.push({
-    name: "index",
+    name: "index2",
   })
 }
 </script>
@@ -90,8 +107,20 @@ function toWhole() {
     <div class="divider mt-1 mb-1"></div>
     <div class="flex flex-row justify-center w-full">
       <el-button class="opposans w-1/4 " type="success" @click="createTopic">提交任务需求</el-button>
-      <el-button class="opposans w-1/4 " type="warning" @click="toWhole">切换到整卷</el-button>
+      <el-button class="opposans w-1/4 " type="warning" @click="toSingle">切换到单题</el-button>
     </div>
+  </div>
+
+  <div class="card bg-[--panel-color] shadow-2xl pl-2 pr-2">
+    <div class="flex flex-col">
+      <h1 class="opposans mt-1 text-[16px] text-[--black-light-color]">试题</h1>
+      <div class="divider mt-1 mb-1"></div>
+      <div class="h-[500px] overflow-y-auto opposans">
+
+      </div>
+    </div>
+    <div class="divider mt-1 mb-1"></div>
+    <el-button class="opposans w-1/3 mr-auto ml-auto " type="primary" @click="toSingle">导出word</el-button>
   </div>
 </template>
 

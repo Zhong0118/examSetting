@@ -12,7 +12,7 @@ const router = createRouter({
         {
             path: "/index",
             name: "index",
-            component: () => import("@/views/IndexPage.vue"),
+            component: () => import("@/views/WholeExamPage.vue"),
             meta: {
                 title: "BU-Exam | 新时代AI出题助手", // 定义标题
             },
@@ -23,6 +23,14 @@ const router = createRouter({
             component: () => import("@/views/LoginPage.vue"),
             meta: {
                 title: "BU-Exam | 登陆注册", // 定义标题
+            },
+        },
+        {
+            path: "/index2",
+            name: "index2",
+            component: () => import("@/views/IndexPage.vue"),
+            meta: {
+                title: "BU-Exam | 新时代AI出题助手", // 定义标题
             },
         },
 

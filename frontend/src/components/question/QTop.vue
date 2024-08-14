@@ -41,7 +41,6 @@ const types = [
 // 题目类型
 const p = {
   expandTrigger: 'hover' as const,
-
 }
 
 // 难度等级
