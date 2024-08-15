@@ -17,10 +17,6 @@ const answer = ref('')
 const question = ref('')
 const target = ref([])
 
-const resultDialog = ref();
-const analyseDialog = ref();
-const analyseChat = ref();
-
 const initPage = () => {
   answer.value = titleStore.title?.answer!;
   question.value = titleStore.title?.question!;
@@ -109,6 +105,8 @@ const chatOpen = () => {
 }
 
 // 为后端发送答案，进行评价
+const analyseDialog = ref();
+const analyseChat = ref();
 const sendAnswer = async () => {
   if (answerInput.value === '' || target.value.length === 0) {
     ElMessage({
@@ -117,6 +115,7 @@ const sendAnswer = async () => {
     })
     return;
   }
+  analyseChat.value.innerHTML = '';
   analyseDialog.value.showModal();
   const response = await fetch("http://localhost:5000/api/check", {
     method: "POST",
@@ -142,11 +141,13 @@ const sendAnswer = async () => {
   }
   reader.releaseLock();
 }
+
 const closeAnalyse = () => {
-  resultDialog.value.close()
+  analyseDialog.value.close()
 }
 
 // 打开初始生成的AI答案框架
+const resultDialog = ref();
 const viewAnswer = () => {
   resultDialog.value.showModal()
 }

@@ -1,31 +1,33 @@
 <script lang="ts" setup>
-import QTop from "@/components/question/QTop.vue";
 import {ref} from "vue";
-import {useQuestionStore} from "@/stores/question";
-import {ElLoading, ElMessage} from "element-plus";
-import {useTitleStore} from "@/stores/title";
+import {ElMessage, ElMessageBox} from "element-plus";
 // @ts-ignore
 import emitter from "@/utils/mitter";
 // @ts-ignore
 import router from "@/router";
-import Multiple from "@/components/answer/Multiple.vue";
-import Single from "@/components/answer/Single.vue";
-import Blank from "@/components/answer/Blank.vue";
-import Result from "@/components/answer/Result.vue";
-import Check from "@/components/answer/Check.vue";
+import {options} from "@/utils/objects";
+import {Upload} from "@element-plus/icons-vue";
+import DocUpload from "@/components/question/DocUpload.vue";
+import {marked} from "marked";
+import dayjs from "dayjs";
+import * as docx from "docx";
+import {Paragraph} from "docx";
 
-const questionStore = useQuestionStore();
+const target = ref([]);
+
+const num1 = ref(0)
+const num2 = ref(0)
+const num3 = ref(0)
+const num4 = ref(0)
+const num5 = ref(0)
+const num6 = ref(0)
+
 const questionNeed = ref('')
-const titleStore = useTitleStore();
-const loading = ref(false);
+const examTitles = ref();
 const createTopic = async () => {
-  const target = questionStore.question?.target;
-  const type = questionStore.question?.type;
-  const difficult = questionStore.question?.difficult;
-  console.log(difficult)
-  if (target?.length === 0 || type === '' || difficult === 0) {
+  if (target.value.length === 0 || (num1.value === 0 && num2.value === 0 && num3.value === 0 && num4.value === 0 && num5.value === 0 && num6.value === 0)) {
     ElMessage({
-      message: '请选择学科类型、题目种类和难度系数',
+      message: '请选择需要的科目和题目数量',
       type: 'warning',
     })
     return
@@ -37,46 +39,40 @@ const createTopic = async () => {
     })
     return
   }
-  const loadingInstance = ElLoading.service({
-    lock: true,
-    text: "生成题目中，请稍候...",
-    background: "rgba(0, 0, 0, 0.7)",
-  });
-  loading.value = true;
   try {
-    const response = await fetch("http://localhost:5000/api/single", {
+    const response = await fetch("http://localhost:5000/api/whole", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        target: target,
-        type: type,
-        difficult: difficult,
+        target: target.value,
         questionNeed: questionNeed.value,
+        num1: num1.value,
+        num2: num2.value,
+        num3: num3.value,
+        num4: num4.value,
+        num5: num5.value,
+        num6: num6.value,
       }),
     });
-    if (response.status === 200) {
-      loading.value = false;
-      loadingInstance.close()
-      const result = await response.json()
-      const result_str = result.message;
-      const result_arr = result_str.split('\n\n');
-      const type_str = type;
-      if (type_str === '单选' || type_str === '多选') {
-        const answer = result_arr[3] + '\n' + result_arr[4];
-        const q = result_arr[1];
-        const options = result_arr[2].split('\n');
-        // @ts-ignore
-        titleStore.setTitle({type_str, answer, q, options})
-      } else {
-        const answer = result_arr[3] + '\n' + result_arr[4];
-        const q = result_arr[1];
-        // @ts-ignore
-        titleStore.setTitle({type_str, answer, q})
+    examTitles.value.innerHTML = '';
+    generating.value = true;
+    const aiBP = document.createElement("p");
+    examTitles.value.appendChild(aiBP);
+    const reader = response.body!.getReader();
+    let returnText = "";
+    while (true) {
+      const {done, value} = await reader.read();
+      const chunk = new TextDecoder().decode(value);
+      returnText += chunk;
+      aiBP.innerHTML = <string>marked.parse(returnText);
+      if (done) {
+        break;
       }
-      emitter.emit('answer-page-setting')
     }
+    reader.releaseLock();
+    generating.value = false;
   } catch (e) {
     ElMessage({
       message: '生成题目失败',
@@ -84,6 +80,67 @@ const createTopic = async () => {
     })
   }
 }
+
+function exportWord() {
+  ElMessageBox.prompt('请输入您的文件名', '文件名', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    inputPattern:
+        /^(?!\s*$).+/,
+    inputErrorMessage: '无效输入',
+  }).then(({value}) => {
+    try {
+      const fileName2 = dayjs().format('YYYYMMDDHHmmss');
+      const fileName = value + fileName2 + '.docx';
+      const fullText = examTitles.value.innerText;
+      const doc = new docx.Document({
+        //文档作者，显示在文档属性中
+        creator: "BUPT_AI",
+        title: fileName,
+        description: 'AI出题，仅供参考',
+        sections: [
+          {
+            properties: {},
+            //主体内容
+            children: fullText.split('\n').map((t: string) => {
+              return new Paragraph({text: t})
+            }),
+          },
+        ],
+      });
+      docx.Packer.toBlob(doc).then((blob) => {
+        const blobUrl = URL.createObjectURL(blob);
+        const downloadLink = document.createElement("a");
+        downloadLink.href = blobUrl;
+        downloadLink.download = fileName;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      });
+    } catch (error) {
+      ElMessage({
+        type: 'info',
+        message: '导出失败',
+      })
+    }
+
+  }).catch(() => {
+    ElMessage({
+      type: 'info',
+      message: '取消导出',
+    })
+  })
+}
+
+const p = {
+  expandTrigger: 'hover' as const,
+  multiple: true
+}
+const uploadShow = () => {
+  emitter.emit('upload-show')
+}
+
+const generating = ref(false);
 
 function toSingle() {
   router.push({
@@ -93,17 +150,69 @@ function toSingle() {
 </script>
 
 <template>
+  <DocUpload/>
   <div class="card bg-[--panel-color] shadow-2xl pl-2 pr-2">
-    <QTop/>
+    <div class="grid grid-rows-1 grid-cols-2 pl-1 pr-1">
+      <div class="pt-2">
+        <span class="mt-1 text-[14px] text-[--black-light-color]">目标科目:</span>
+        <el-cascader
+            v-model="target"
+            :options="options"
+            :props="p"
+            class="w-[90%]"
+            collapse-tags
+            collapse-tags-tooltip
+            placeholder="目标"
+        />
+      </div>
+      <div class="pt-2">
+        <span class="mt-1 text-[14px] text-[--black-light-color]">文件参考:</span>
+        <br>
+        <el-button class="opposans" type="primary" @click="uploadShow">
+          <el-icon class="el-icon--left">
+            <Upload/>
+          </el-icon>
+          选择文件
+        </el-button>
+      </div>
+    </div>
     <div class="divider mt-1 mb-1"></div>
     <el-input
         v-model="questionNeed"
-        :autosize="{ minRows: 18, maxRows: 20 }"
-        class="t-a"
-        placeholder="输入您的需求"
+        :rows="6"
+        placeholder="输入您的具体需求"
         resize="none"
         type="textarea"
     />
+    <div>
+      <p class="text-[14px] text-[--black-light-color] mt-1">题目类型需求及数量</p>
+      <div class="grid grid-cols-3 grid-rows-2 pl-1 pr-1 gap-1">
+        <div class="pt-2">
+          <span class="mt-1 text-[13px] text-[--black-light-color] opposans">单选题</span>
+          <el-input-number v-model="num1" :max="10" :min="0" class="mx-4"/>
+        </div>
+        <div class="pt-2">
+          <span class="mt-1 text-[13px] text-[--black-light-color] opposans">多选题</span>
+          <el-input-number v-model="num2" :max="5" :min="0" class="mx-4"/>
+        </div>
+        <div class="pt-2">
+          <span class="mt-1 text-[13px] text-[--black-light-color] opposans">填空题</span>
+          <el-input-number v-model="num3" :max="10" :min="0" class="mx-4"/>
+        </div>
+        <div class="pt-2">
+          <span class="mt-1 text-[13px] text-[--black-light-color] opposans">判断题</span>
+          <el-input-number v-model="num4" :max="8" :min="0" class="mx-4"/>
+        </div>
+        <div class="pt-2">
+          <span class="mt-1 text-[13px] text-[--black-light-color] opposans">解答题</span>
+          <el-input-number v-model="num5" :max="6" :min="0" class="mx-4"/>
+        </div>
+        <div class="pt-2">
+          <span class="mt-1 text-[13px] text-[--basic4] opposans">拔高题</span>
+          <el-input-number v-model="num6" :max="2" :min="0" class="mx-4"/>
+        </div>
+      </div>
+    </div>
     <div class="divider mt-1 mb-1"></div>
     <div class="flex flex-row justify-center w-full">
       <el-button class="opposans w-1/4 " type="success" @click="createTopic">提交任务需求</el-button>
@@ -115,12 +224,21 @@ function toSingle() {
     <div class="flex flex-col">
       <h1 class="opposans mt-1 text-[16px] text-[--black-light-color]">试题</h1>
       <div class="divider mt-1 mb-1"></div>
-      <div class="h-[500px] overflow-y-auto opposans">
-
+      <div class="h-4">
+        <el-progress
+            v-show="generating"
+            :duration="2"
+            :indeterminate="true"
+            :percentage="30"
+            class="w-full"
+            status="success"
+        />
+      </div>
+      <div ref="examTitles" class="h-[500px] overflow-y-auto opposans">
       </div>
     </div>
     <div class="divider mt-1 mb-1"></div>
-    <el-button class="opposans w-1/3 mr-auto ml-auto " type="primary" @click="toSingle">导出word</el-button>
+    <el-button class="opposans w-1/3 mr-auto ml-auto " type="primary" @click="exportWord">导出word</el-button>
   </div>
 </template>
 

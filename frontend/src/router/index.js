@@ -28,7 +28,7 @@ const router = createRouter({
         {
             path: "/index2",
             name: "index2",
-            component: () => import("@/views/IndexPage.vue"),
+            component: () => import("@/views/SingleExamPage.vue"),
             meta: {
                 title: "BU-Exam | 新时代AI出题助手", // 定义标题
             },
