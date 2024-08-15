@@ -6,6 +6,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 client = ZhipuAI(api_key="557c1b1736b88908bc81eeba0b8f46ee.atOnzh84zSgaRzSx")  # 请填写您自己的APIKey
+# 出单个题
 system_basic_info1 = """
 你是智能出题系统，请根据我为你提供的基础信息进行出题。你需要明确不同年级、不同科目、不同知识点的出题要求，以及出题的难度等级和出题类型。
 对于每一道题请以严格的格式进行区分。
@@ -15,14 +16,21 @@ system_basic_info1 = """
 difficulties = {'1': '非常简单', '2': '简单', '3': '正常', '4': '较难', '5': '困难'}
 title_types = {'单选': '单选题', '多选': '多选题', '填空': '填空题', '判断': '判断题', '解答': '解答题'}
 title_info = ''
+# 单个题目评分解析
 system_basic_info2 = """
-你是智能出题系统，此时你已得知题目需求以及用户答案，请为用户的答案进行评分评价和建议
+你是智能出题系统，此时你已得知题目需求以及用户答案，请为用户的答案进行评分评价和建议。
 """
+# 单个题目的chat
 system_basic_info3 = """
-你是智能出题系统，请根据我为你提供的基础信息进行出题。你需要明确不同年级、不同科目、不同知识点的出题要求，以及出题的难度等级和出题类型。
+你是智能出题系统，默认得知了题目需求和结果，请根据用户发来的信息进行对话交流。
+"""
+# 成套题目的背景信息
+system_basic_info4 = """
+你是智能出题系统，默认得知了题目需求和结果，请根据用户发来的信息进行对话交流。
 """
 
 
+# 流式输出
 def generate_stream(ai_response):
     try:
         for chunk in ai_response:
@@ -32,15 +40,20 @@ def generate_stream(ai_response):
         print("Client disconnected")
 
 
+# 单个题的API
 @app.route('/api/single', methods=['POST'])
 def single_chat():
     global title_info
     data = request.json
+    # 类型
     tt = data.get('type')
     title_type = title_types.get(tt)
+    # 难度
     dd = data.get('difficult')
     difficult = difficulties.get(str(dd))
+    # 题目要求
     need = data.get('questionNeed')
+    # 年级、学科、知识点
     target = data.get('target')
     target_str = ''
     for i in target:
@@ -58,23 +71,41 @@ def single_chat():
     return jsonify({'info': 'success', 'message': title_info}), 200
 
 
+# 直接获得分析的结果
 @app.route('/api/check', methods=['POST'])
 def check_chat():
     global title_info
     data = request.json
     user_message = data.get('message')
-    whole_info = '题目为：' + title_info + '。用户答案是：' + user_message
     ai_response = client.chat.completions.create(
         model="glm-4",
         messages=[
-            {"role": "system", "content": system_basic_info2},
-            {"role": "user", "content": whole_info}
+            {"role": "system", "content": system_basic_info2 + '。题目信息是：' + title_info},
+            {"role": "user", "content": user_message}
         ],
         stream=True,
     )
     return Response(generate_stream(ai_response), content_type='text/event-stream')
 
 
+# 对话
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    global title_info
+    data = request.json
+    user_message = data.get('message')
+    ai_response = client.chat.completions.create(
+        model="glm-4",
+        messages=[
+            {"role": "system", "content": system_basic_info3 + '。题目信息是：' + title_info},
+            {"role": "user", "content": user_message}
+        ],
+        stream=True,
+    )
+    return Response(generate_stream(ai_response), content_type='text/event-stream')
+
+
+# 给出套题
 @app.route('/api/whole', methods=['GET', 'POST'])
 def ai_assistant():
     if request.method == 'GET':
