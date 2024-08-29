@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {ElMessage, ElMessageBox} from "element-plus";
 // @ts-ignore
 import emitter from "@/utils/mitter";
@@ -64,9 +64,15 @@ const randomRequire = async () => {
   })
 }
 
+const continue_ = ref(false)
+const times = ref(0)
+
+const wholeNum = computed(() => {
+  return num1.value + num2.value + num3.value + num4.value + num5.value + num6.value;
+})
 
 const createTopic = async () => {
-  if (target.value.length === 0 || (num1.value === 0 && num2.value === 0 && num3.value === 0 && num4.value === 0 && num5.value === 0 && num6.value === 0)) {
+  if (target.value.length === 0 || (wholeNum.value === 0)) {
     ElMessage({
       message: '请选择需要的科目和题目数量',
       type: 'warning',
@@ -81,6 +87,11 @@ const createTopic = async () => {
     return
   }
   try {
+    let textData = [];
+    for (let child of examTitles.value.children) {
+      textData.push(child.textContent);
+    }
+    const textContent = textData.join('\n');
     const response = await fetch("http://localhost:5000/api/whole", {
       method: "POST",
       headers: {
@@ -95,9 +106,23 @@ const createTopic = async () => {
         num4: num4.value,
         num5: num5.value,
         num6: num6.value,
+        existing: textContent,
       }),
     });
-    examTitles.value.innerHTML = '';
+    if (times.value === 0) {
+      continue_.value = true;
+      times.value += 1;
+    } else if (times.value === 5) {
+      continue_.value = false;
+      times.value = 0;
+      ElMessage({
+        message: '生成题目次数过多，请稍后继续',
+        type: 'info',
+      })
+    }
+    if (!continue_) {
+      examTitles.value.innerHTML = '';
+    }
     generating.value = true;
     const aiBP = document.createElement("p");
     examTitles.value.appendChild(aiBP);
@@ -114,12 +139,22 @@ const createTopic = async () => {
     }
     reader.releaseLock();
     generating.value = false;
+    ElMessage({
+      message: '本轮题目生成完毕',
+      type: 'success',
+    })
   } catch (e) {
     ElMessage({
       message: '生成题目失败',
       type: 'error',
     })
   }
+}
+
+const clearAll = () => {
+  examTitles.value.innerHTML = '';
+  times.value = 0;
+  continue_.value = false;
 }
 
 function exportWord() {
@@ -220,7 +255,7 @@ function toSingle() {
     <div class="divider mt-1 mb-1"></div>
     <el-input
         v-model="questionNeed"
-        :rows="6"
+        :rows="16"
         placeholder="输入您的具体需求"
         resize="none"
         type="textarea"
@@ -256,9 +291,9 @@ function toSingle() {
     </div>
     <div class="divider mt-1 mb-1"></div>
     <div class="flex flex-row justify-center w-full">
-      <el-button class="opposans w-1/4 " type="info" @click="randomRequire">生成随机需求</el-button>
-      <el-button class="opposans w-1/4 " type="success" @click="createTopic">提交任务需求</el-button>
-      <el-button class="opposans w-1/4 " type="warning" @click="toSingle">切换到单题</el-button>
+      <el-button class="opposans w-1/5 " type="info" @click="randomRequire">生成随机需求</el-button>
+      <el-button class="opposans w-1/5 " type="success" @click="createTopic">提交任务需求</el-button>
+      <el-button class="opposans w-1/5 " type="warning" @click="toSingle">切换到单题</el-button>
     </div>
   </div>
 
@@ -280,7 +315,16 @@ function toSingle() {
       </div>
     </div>
     <div class="divider mt-1 mb-1"></div>
-    <el-button class="opposans w-1/3 mr-auto ml-auto " type="primary" @click="exportWord">导出word</el-button>
+    <el-button-group class="ml-auto mr-auto">
+      <el-button v-if="continue_" class="opposans" type="info" @click="createTopic">
+        <div class="flex flex-row gap-1">
+          <i class="ri-arrow-right-double-fill"></i>
+          <span>继续生成</span>
+        </div>
+      </el-button>
+      <el-button class="opposans mr-auto ml-auto " type="primary" @click="exportWord">导出word</el-button>
+      <el-button class="opposans mr-auto ml-auto " type="primary" @click="clearAll">一键清空</el-button>
+    </el-button-group>
   </div>
 </template>
 

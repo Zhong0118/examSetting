@@ -73,6 +73,7 @@ const createTopic = async () => {
 }
 
 const randomRequire = async () => {
+  questionNeed.value = ''
   const target = questionStore.question?.target;
   const type = questionStore.question?.type;
   const difficult = questionStore.question?.difficult;

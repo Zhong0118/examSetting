@@ -28,7 +28,7 @@ system_basic_info3 = """
 system_basic_info4 = """
 你是智能出题系统，你会得到我提供给你的相应年级的某学科考察的一些不同知识点，同时会得到为你提供的单选题、多选题、填空题、判断题、解答题和拔高题的数量需求，
 你需要根据这些要求进行出题。对于单选、多选、填空、判断和解答题，请出正常及正常偏难的题目，对于拔高题请出非常困难的题目，不过拔高题可以是解答题也可以是其他类型
-请根据需求依次给出题目和答案解析，同时需要题目序号。
+请根据需求依次给出题目和答案解析，同时需要题目序号。同时你也可能会得到一些已经存在了的题目，请不要重复出题。
 """
 
 system_basic_info5 = """
@@ -165,6 +165,9 @@ def chat():
     return Response(generate_stream(ai_response), content_type='text/event-stream')
 
 
+generation_state = {}
+
+
 # 给出套题
 @app.route('/api/whole', methods=['GET', 'POST'])
 def ai_assistant():
@@ -181,6 +184,7 @@ def ai_assistant():
         num6 = data.get('num6')
         title_type = f"{num1}道单选题、{num2}道多选题、{num3}道填空题、{num4}道判断题、{num5}道解答题、{num6}道拔高题"
         target = data.get('target')
+        existing = data.get('existing')
         print(target)
         target_set = []
         for i in range(len(target)):
@@ -190,7 +194,7 @@ def ai_assistant():
         target_str = ''
         for i in target_set:
             target_str += i + '、'
-        user_message = f"请忘记之前的相关内容。题目考察范围：{target_str}\n题目所需类型及数量：{title_type}\n题目要求：{need}"
+        user_message = f"请忘记之前的相关内容。题目考察范围：{target_str}\n题目所需类型及数量：{title_type}\n题目要求：{need}\n已有题目：{existing}"
         ai_response = client.chat.completions.create(
             model="glm-4",
             messages=[
