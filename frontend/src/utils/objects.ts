@@ -1665,8 +1665,719 @@ const options = [
     },
 ]
 
+const majors = ['网络空间安全', '软件工程', '计算机科学', '人工智能']
+const subjects1 = ['计算机组成原理', '计算机网络', '网络安全基础', '网络空间安全导论', '密码学', '网络攻防', '信息论与编码']
+const knowledge1 = ['冯诺依曼体系架构', '并行处理', '算术逻辑单元', 'CPU和寄存器', '存储系统', '总线结构',
+    '网络分层模型', 'IP和子网', 'TCP/IP和UDP', 'DNS和NAT', 'HTTP和HTTPS', '传输层', '数据链路层',
+    '个人隐私保护', '风险评估与管理', '加密技术', '身份认证和访问控制', '安全防护技术',
+    '网络安全模型', '密码学基础', '网络安全威胁', '空间合作管理',
+    '密码学的定义', '现代密码体制', '哈希函数', '数字签名', '密钥交换协议', '量子密码学',
+    '网络攻击手段', '网络防御手段', '网络扫描技术', 'SQL注入攻击', 'DOS和DDOS', 'XSS和CSRF',
+    '信息熵', '信道容量', '算术编码']
 
+const subjects2 = ['数据结构与算法', '离散数学', 'python程序设计', '面向对象编程', '软件方法论', '机器学习']
+const knowledge2 = ['数组和链表', '队列和栈', '树和图', '递归和分治算法', '排序算法', '搜索算法', '图论', '动态规划',
+    '集合论', '关系和函数', '逻辑和布尔代数', '数论',
+    '数据类型', '控制结构', '类和方法', '模块和包',
+    '类', '构造函数', '继承与多态与封装', '抽象和接口',
+    '软件工程的定义', '软件开发的过程', '软件开发的工具', '软件质量保证', '软件工程的原则',
+    '监督学习相关', '决策树', '随机森林', '向量机', '卷积神经网络', '人工神经网络', '数据预处理', '伦理道德'
+]
+
+const subjects3 = ['操作系统', '数据库原理', '编译原理', '程序设计基础', '计算机图形学', '分布式系统']
+const knowledge3 = ['系统分类', '进程管理', '内存系统', '文件管理',
+    '数据模型', '关系型数据库', '非关系型数据库', 'SQL语言', '事务处理', '并发控制',
+    '编译器设计', '词法分析', '语法分析', '语义分析',
+    '变量和常量', '代码生成', '代码优化', '代码风格', '设计过程分析', '虚拟机',
+    '图形与图像', '矩阵计算', '光影处理', '3D图形学', '动画与特效', '游戏编程',
+    '分布式系统的定义', '分布式系统的原理', '主流技术', '分布式事务', '中间件', '分布式系统设计模式'
+]
+
+const subjects4 = ['模式识别', '深度学习', '自然语言处理', '计算机视觉', '计算智能导论']
+const knowledge4 = ['特征提取', '分类算法', '聚类分析', '模式识别系统设计', '统计学习理论',
+    '卷积神经网络', '循环神经网络', '长短期记忆网络', '生成对抗网络',
+    '词嵌入', '语言模型', '机器翻译', '文本分类', '情感分析',
+    '图像处理', '特征检测', '目标识别', '场景重建', '图像分割',
+    '遗传算法', '模糊逻辑', '神经模糊系统', '群体智能', '蚁群优化'
+]
+
+
+const buoptions = [
+    {
+        value: majors[0],
+        label: majors[0],
+        children: [
+            {
+                value: subjects1[0],
+                label: subjects1[0],
+                children: [
+                    {
+                        value: knowledge1[0],
+                        label: knowledge1[0]
+                    },
+                    {
+                        value: knowledge1[1],
+                        label: knowledge1[1]
+                    },
+                    {
+                        value: knowledge1[2],
+                        label: knowledge1[2]
+                    },
+                    {
+                        value: knowledge1[3],
+                        label: knowledge1[3]
+                    },
+                    {
+                        value: knowledge1[4],
+                        label: knowledge1[4]
+                    },
+                    {
+                        value: knowledge1[5],
+                        label: knowledge1[5]
+                    },
+                ]
+            },
+            {
+                value: subjects1[1],
+                label: subjects1[1],
+                children: [
+                    {
+                        value: knowledge1[6],
+                        label: knowledge1[6]
+                    },
+                    {
+                        value: knowledge1[7],
+                        label: knowledge1[7]
+                    },
+                    {
+                        value: knowledge1[8],
+                        label: knowledge1[8]
+                    },
+                    {
+                        value: knowledge1[9],
+                        label: knowledge1[9]
+                    },
+                    {
+                        value: knowledge1[10],
+                        label: knowledge1[10]
+                    },
+                    {
+                        value: knowledge1[11],
+                        label: knowledge1[11]
+                    },
+                    {
+                        value: knowledge1[12],
+                        label: knowledge1[12]
+                    },
+                ]
+            },
+            {
+                value: subjects1[2],
+                label: subjects1[2],
+                children: [
+                    {
+                        value: knowledge1[13],
+                        label: knowledge1[13]
+                    },
+                    {
+                        value: knowledge1[14],
+                        label: knowledge1[14]
+                    },
+                    {
+                        value: knowledge1[15],
+                        label: knowledge1[15]
+                    },
+                    {
+                        value: knowledge1[16],
+                        label: knowledge1[16]
+                    },
+                    {
+                        value: knowledge1[17],
+                        label: knowledge1[17]
+                    },
+                ]
+            },
+            {
+                value: subjects1[3],
+                label: subjects1[3],
+                children: [
+                    {
+                        value: knowledge1[18],
+                        label: knowledge1[18]
+                    },
+                    {
+                        value: knowledge1[19],
+                        label: knowledge1[19]
+                    },
+                    {
+                        value: knowledge1[20],
+                        label: knowledge1[20]
+                    },
+                    {
+                        value: knowledge1[21],
+                        label: knowledge1[21]
+                    },
+                ]
+            },
+            {
+                value: subjects1[4],
+                label: subjects1[4],
+                children: [
+                    {
+                        value: knowledge1[22],
+                        label: knowledge1[22]
+                    },
+                    {
+                        value: knowledge1[23],
+                        label: knowledge1[23]
+                    },
+                    {
+                        value: knowledge1[24],
+                        label: knowledge1[24]
+                    },
+                    {
+                        value: knowledge1[25],
+                        label: knowledge1[25]
+                    },
+                    {
+                        value: knowledge1[26],
+                        label: knowledge1[26]
+                    },
+                    {
+                        value: knowledge1[27],
+                        label: knowledge1[27]
+                    },
+                ]
+            },
+            {
+                value: subjects1[5],
+                label: subjects1[5],
+                children: [
+                    {
+                        value: knowledge1[28],
+                        label: knowledge1[28]
+                    },
+                    {
+                        value: knowledge1[29],
+                        label: knowledge1[29]
+                    },
+                    {
+                        value: knowledge1[30],
+                        label: knowledge1[30]
+                    },
+                    {
+                        value: knowledge1[31],
+                        label: knowledge1[31]
+                    },
+                    {
+                        value: knowledge1[32],
+                        label: knowledge1[32]
+                    },
+                    {
+                        value: knowledge1[33],
+                        label: knowledge1[33]
+                    },
+                ]
+            },
+            {
+                value: subjects1[6],
+                label: subjects1[6],
+                children: [
+                    {
+                        value: knowledge1[34],
+                        label: knowledge1[34]
+                    },
+                    {
+                        value: knowledge1[35],
+                        label: knowledge1[35]
+                    },
+                    {
+                        value: knowledge1[36],
+                        label: knowledge1[36]
+                    },
+                ]
+            },
+        ]
+    },
+    {
+        value: majors[1],
+        label: majors[1],
+        children: [
+            {
+                value: subjects2[0],
+                label: subjects2[0],
+                children: [
+                    {
+                        value: knowledge2[0],
+                        label: knowledge2[0]
+                    },
+                    {
+                        value: knowledge2[1],
+                        label: knowledge2[1]
+                    },
+                    {
+                        value: knowledge2[2],
+                        label: knowledge2[2]
+                    },
+                    {
+                        value: knowledge2[3],
+                        label: knowledge2[3]
+                    },
+                    {
+                        value: knowledge2[4],
+                        label: knowledge2[4]
+                    },
+                    {
+                        value: knowledge2[5],
+                        label: knowledge2[5]
+                    },
+                    {
+                        value: knowledge2[6],
+                        label: knowledge2[6]
+                    },
+                    {
+                        value: knowledge2[7],
+                        label: knowledge2[7]
+                    },
+                ]
+            },
+            {
+                value: subjects2[1],
+                label: subjects2[1],
+                children: [
+                    {
+                        value: knowledge2[8],
+                        label: knowledge2[8]
+                    },
+                    {
+                        value: knowledge2[9],
+                        label: knowledge2[9]
+                    },
+                    {
+                        value: knowledge2[10],
+                        label: knowledge2[10]
+                    },
+                    {
+                        value: knowledge2[11],
+                        label: knowledge2[11]
+                    },
+                ]
+            },
+            {
+                value: subjects2[2],
+                label: subjects2[2],
+                children: [
+                    {
+                        value: knowledge2[12],
+                        label: knowledge2[12]
+                    },
+                    {
+                        value: knowledge2[13],
+                        label: knowledge2[13]
+                    },
+                    {
+                        value: knowledge2[14],
+                        label: knowledge2[14]
+                    },
+                    {
+                        value: knowledge2[15],
+                        label: knowledge2[15]
+                    },
+                ]
+            },
+            {
+                value: subjects2[3],
+                label: subjects2[3],
+                children: [
+                    {
+                        value: knowledge2[16],
+                        label: knowledge2[16]
+                    },
+                    {
+                        value: knowledge2[17],
+                        label: knowledge2[17]
+                    },
+                    {
+                        value: knowledge2[18],
+                        label: knowledge2[18]
+                    },
+                    {
+                        value: knowledge2[19],
+                        label: knowledge2[19]
+                    },
+                ]
+            },
+            {
+                value: subjects2[4],
+                label: subjects2[4],
+                children: [
+                    {
+                        value: knowledge2[20],
+                        label: knowledge2[20]
+                    },
+                    {
+                        value: knowledge2[21],
+                        label: knowledge2[21]
+                    },
+                    {
+                        value: knowledge2[22],
+                        label: knowledge2[22]
+                    },
+                    {
+                        value: knowledge2[23],
+                        label: knowledge2[23]
+                    },
+                    {
+                        value: knowledge2[24],
+                        label: knowledge2[24]
+                    },
+                ]
+            },
+            {
+                value: subjects2[5],
+                label: subjects2[5],
+                children: [
+                    {
+                        value: knowledge2[25],
+                        label: knowledge2[25]
+                    },
+                    {
+                        value: knowledge2[26],
+                        label: knowledge2[26]
+                    },
+                    {
+                        value: knowledge2[27],
+                        label: knowledge2[27]
+                    },
+                    {
+                        value: knowledge2[28],
+                        label: knowledge2[28]
+                    },
+                    {
+                        value: knowledge2[29],
+                        label: knowledge2[29]
+                    },
+                    {
+                        value: knowledge2[30],
+                        label: knowledge2[30]
+                    },
+                    {
+                        value: knowledge2[31],
+                        label: knowledge2[31]
+                    },
+                    {
+                        value: knowledge2[32],
+                        label: knowledge2[32]
+                    },
+                ]
+            },
+        ]
+    },
+    {
+        value: majors[2],
+        label: majors[2],
+        children: [
+            {
+                value: subjects3[0],
+                label: subjects3[0],
+                children: [
+                    {
+                        value: knowledge3[0],
+                        label: knowledge3[0]
+                    },
+                    {
+                        value: knowledge3[1],
+                        label: knowledge3[1]
+                    },
+                    {
+                        value: knowledge3[2],
+                        label: knowledge3[2]
+                    },
+                    {
+                        value: knowledge3[3],
+                        label: knowledge3[3]
+                    },
+                ]
+            },
+            {
+                value: subjects3[1],
+                label: subjects3[1],
+                children: [
+                    {
+                        value: knowledge3[4],
+                        label: knowledge3[4]
+                    },
+                    {
+                        value: knowledge3[5],
+                        label: knowledge3[5]
+                    },
+                    {
+                        value: knowledge3[6],
+                        label: knowledge3[6]
+                    },
+                    {
+                        value: knowledge3[7],
+                        label: knowledge3[7]
+                    },
+                    {
+                        value: knowledge3[8],
+                        label: knowledge3[8]
+                    },
+                    {
+                        value: knowledge3[9],
+                        label: knowledge3[9]
+                    },
+                ]
+            },
+            {
+                value: subjects3[2],
+                label: subjects3[2],
+                children: [
+                    {
+                        value: knowledge3[10],
+                        label: knowledge3[10]
+                    },
+                    {
+                        value: knowledge3[11],
+                        label: knowledge3[11]
+                    },
+                    {
+                        value: knowledge3[12],
+                        label: knowledge3[12]
+                    },
+                    {
+                        value: knowledge3[13],
+                        label: knowledge3[13]
+                    },
+                ]
+            },
+            {
+                value: subjects3[3],
+                label: subjects3[3],
+                children: [
+                    {
+                        value: knowledge3[14],
+                        label: knowledge3[14]
+                    },
+                    {
+                        value: knowledge3[15],
+                        label: knowledge3[15]
+                    },
+                    {
+                        value: knowledge3[16],
+                        label: knowledge3[16]
+                    },
+                    {
+                        value: knowledge3[17],
+                        label: knowledge3[17]
+                    },
+                    {
+                        value: knowledge3[18],
+                        label: knowledge3[18]
+                    },
+                    {
+                        value: knowledge3[19],
+                        label: knowledge3[19]
+                    },
+                ]
+            },
+            {
+                value: subjects3[4],
+                label: subjects3[4],
+                children: [
+                    {
+                        value: knowledge3[20],
+                        label: knowledge3[20]
+                    },
+                    {
+                        value: knowledge3[21],
+                        label: knowledge3[21]
+                    },
+                    {
+                        value: knowledge3[22],
+                        label: knowledge3[22]
+                    },
+                    {
+                        value: knowledge3[23],
+                        label: knowledge3[23]
+                    },
+                    {
+                        value: knowledge3[24],
+                        label: knowledge3[24]
+                    },
+                    {
+                        value: knowledge3[25],
+                        label: knowledge3[25]
+                    },
+                ]
+            },
+            {
+                value: subjects3[5],
+                label: subjects3[5],
+                children: [
+                    {
+                        value: knowledge3[26],
+                        label: knowledge3[26]
+                    },
+                    {
+                        value: knowledge3[27],
+                        label: knowledge3[27]
+                    },
+                    {
+                        value: knowledge3[28],
+                        label: knowledge3[28]
+                    },
+                    {
+                        value: knowledge3[29],
+                        label: knowledge3[29]
+                    },
+                    {
+                        value: knowledge3[30],
+                        label: knowledge3[30]
+                    },
+                    {
+                        value: knowledge3[31],
+                        label: knowledge3[31]
+                    },
+                ]
+            },
+        ]
+    },
+    {
+        value: majors[3],
+        label: majors[3],
+        children: [
+            {
+                value: subjects4[0],
+                label: subjects4[0],
+                children: [
+                    {
+                        value: knowledge4[0],
+                        label: knowledge4[0]
+                    },
+                    {
+                        value: knowledge4[1],
+                        label: knowledge4[1]
+                    },
+                    {
+                        value: knowledge4[2],
+                        label: knowledge4[2]
+                    },
+                    {
+                        value: knowledge4[3],
+                        label: knowledge4[3]
+                    },
+                    {
+                        value: knowledge4[4],
+                        label: knowledge4[4]
+                    },
+                ]
+            },
+            {
+                value: subjects4[1],
+                label: subjects4[1],
+                children: [
+                    {
+                        value: knowledge4[5],
+                        label: knowledge4[5]
+                    },
+                    {
+                        value: knowledge4[6],
+                        label: knowledge4[6]
+                    },
+                    {
+                        value: knowledge4[7],
+                        label: knowledge4[7]
+                    },
+                    {
+                        value: knowledge4[8],
+                        label: knowledge4[8]
+                    },
+                ]
+            },
+            {
+                value: subjects4[2],
+                label: subjects4[2],
+                children: [
+                    {
+                        value: knowledge4[9],
+                        label: knowledge4[9]
+                    },
+                    {
+                        value: knowledge4[10],
+                        label: knowledge4[10]
+                    },
+                    {
+                        value: knowledge4[11],
+                        label: knowledge4[11]
+                    },
+                    {
+                        value: knowledge4[12],
+                        label: knowledge4[12]
+                    },
+                    {
+                        value: knowledge4[13],
+                        label: knowledge4[13]
+                    },
+                ]
+            },
+            {
+                value: subjects4[3],
+                label: subjects4[3],
+                children: [
+                    {
+                        value: knowledge4[14],
+                        label: knowledge4[14]
+                    },
+                    {
+                        value: knowledge4[15],
+                        label: knowledge4[15]
+                    },
+                    {
+                        value: knowledge4[16],
+                        label: knowledge4[16]
+                    },
+                    {
+                        value: knowledge4[17],
+                        label: knowledge4[17]
+                    },
+                    {
+                        value: knowledge4[18],
+                        label: knowledge4[18]
+                    },
+                ]
+            },
+            {
+                value: subjects4[4],
+                label: subjects4[4],
+                children: [
+                    {
+                        value: knowledge4[19],
+                        label: knowledge4[19]
+                    },
+                    {
+                        value: knowledge4[20],
+                        label: knowledge4[20]
+                    },
+                    {
+                        value: knowledge4[21],
+                        label: knowledge4[21]
+                    },
+                    {
+                        value: knowledge4[22],
+                        label: knowledge4[22]
+                    },
+                    {
+                        value: knowledge4[23],
+                        label: knowledge4[23]
+                    },
+                ]
+            },
+        ]
+    },
+]
 export {
     topics,
-    options
+    options,
+    buoptions
 }

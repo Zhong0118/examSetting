@@ -15,11 +15,13 @@ const titleStore = useTitleStore();
 const questionStore = useQuestionStore();
 const answer = ref('')
 const question = ref('')
+const standard = ref('')
 const target = ref([])
 
 const initPage = () => {
   answer.value = titleStore.title?.answer!;
   question.value = titleStore.title?.question!;
+  standard.value = titleStore.title?.standard!;
   // @ts-ignore
   target.value = questionStore.question?.target!;
 }
@@ -123,7 +125,7 @@ const sendAnswer = async () => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      message: answer.value,
+      message: answerInput.value,
     }),
   });
   const aiBP = document.createElement("p");
@@ -171,7 +173,7 @@ function exportWord() {
   }
   const fileName2 = dayjs().format('YYYYMMDDHHmmss');
   const fileName = fileName1 + fileName2 + '.docx';
-  const fullText = question.value + '\n' + answer.value;
+  const fullText = question.value + '\n' + answer.value + '\n' + standard.value;
   const doc = new docx.Document({
     //文档作者，显示在文档属性中
     creator: "BUPT_AI",
@@ -207,108 +209,121 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div v-show="openAItalk" class="drop-shadow-xl fixed z-[999] flex h-[75%] w-[65%] flex-col right-1/2 translate-x-1/2">
-    <div
-        ref="aiTalkDialog"
-        class="flex-1 overflow-y-auto bg-slate-300 text-sm leading-6 text-slate-900 shadow-md sm:text-base sm:leading-7 dark:bg-slate-800 dark:text-slate-300"
-    ></div>
-    <!-- Prompt message input -->
-    <div
-        class="flex w-full items-center rounded-b-md border-t border-slate-300 bg-slate-200 p-2 dark:border-slate-700 dark:bg-slate-900"
-    >
-      <label class="sr-only" for="chat">输入</label>
-      <textarea
-          id="chat-input"
-          v-model="sendAiQuestion"
-          class="mx-2 flex min-h-full w-full rounded-md border border-slate-300 bg-slate-50 p-2 text-base text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-50 dark:placeholder-slate-400 dark:focus:border-blue-600 dark:focus:ring-blue-600"
-          placeholder="输入文本"
-          rows="3"
-      ></textarea>
-      <div>
-        <button
-            class="inline-flex hover:text-blue-600 sm:p-2 dark:text-slate-200 dark:hover:text-blue-600"
-            @click="sendAiMessage"
-        >
-          <i class="ri-send-plane-line"></i>
-          <span class="sr-only">Send message</span>
-        </button>
-      </div>
-      <div>
-        <button
-            class="inline-flex hover:text-blue-300 sm:p-2 dark:text-slate-200 dark:hover:text-blue-600"
-            @click="cancelAiMessage"
-        >
-          <i class="ri-close-circle-line"></i>
-        </button>
-      </div>
-    </div>
-  </div>
+  <!--  <div v-show="openAItalk" class="drop-shadow-xl fixed z-[999] flex h-[75%] w-[65%] flex-col right-1/2 translate-x-1/2">-->
+  <!--    <div-->
+  <!--        ref="aiTalkDialog"-->
+  <!--        class="flex-1 overflow-y-auto bg-slate-300 text-sm leading-6 text-slate-900 shadow-md sm:text-base sm:leading-7 dark:bg-slate-800 dark:text-slate-300"-->
+  <!--    ></div>-->
+  <!--    &lt;!&ndash; Prompt message input &ndash;&gt;-->
+  <!--    <div-->
+  <!--        class="flex w-full items-center rounded-b-md border-t border-slate-300 bg-slate-200 p-2 dark:border-slate-700 dark:bg-slate-900"-->
+  <!--    >-->
+  <!--      <label class="sr-only" for="chat">输入</label>-->
+  <!--      <textarea-->
+  <!--          id="chat-input"-->
+  <!--          v-model="sendAiQuestion"-->
+  <!--          class="mx-2 flex min-h-full w-full rounded-md border border-slate-300 bg-slate-50 p-2 text-base text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-50 dark:placeholder-slate-400 dark:focus:border-blue-600 dark:focus:ring-blue-600"-->
+  <!--          placeholder="输入文本"-->
+  <!--          rows="3"-->
+  <!--      ></textarea>-->
+  <!--      <div>-->
+  <!--        <button-->
+  <!--            class="inline-flex hover:text-blue-600 sm:p-2 dark:text-slate-200 dark:hover:text-blue-600"-->
+  <!--            @click="sendAiMessage"-->
+  <!--        >-->
+  <!--          <i class="ri-send-plane-line"></i>-->
+  <!--          <span class="sr-only">Send message</span>-->
+  <!--        </button>-->
+  <!--      </div>-->
+  <!--      <div>-->
+  <!--        <button-->
+  <!--            class="inline-flex hover:text-blue-300 sm:p-2 dark:text-slate-200 dark:hover:text-blue-600"-->
+  <!--            @click="cancelAiMessage"-->
+  <!--        >-->
+  <!--          <i class="ri-close-circle-line"></i>-->
+  <!--        </button>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
 
 
-  <dialog ref="analyseDialog" class="modal">
-    <div class="modal-box">
-      <form method="dialog">
-        <button
-            class="btm-circle btn btn-ghost btn-sm absolute right-2 top-2"
-            @click="closeAnalyse"
-        >
-          <i class="ri-close-line"></i>
-        </button>
-      </form>
-      <h3 class="alidongfang text-lg font-bold">AI评价</h3>
-      <div ref="analyseChat" class="opposans py-4"></div>
-    </div>
-  </dialog>
+  <!--  <dialog ref="analyseDialog" class="modal">-->
+  <!--    <div class="modal-box">-->
+  <!--      <form method="dialog">-->
+  <!--        <button-->
+  <!--            class="btm-circle btn btn-ghost btn-sm absolute right-2 top-2"-->
+  <!--            @click="closeAnalyse"-->
+  <!--        >-->
+  <!--          <i class="ri-close-line"></i>-->
+  <!--        </button>-->
+  <!--      </form>-->
+  <!--      <h3 class="alidongfang text-lg font-bold">AI评价</h3>-->
+  <!--      <div ref="analyseChat" class="opposans py-4"></div>-->
+  <!--    </div>-->
+  <!--  </dialog>-->
 
 
-  <dialog ref="resultDialog" class="modal">
-    <div class="modal-box">
-      <form method="dialog">
-        <button
-            class="btm-circle btn btn-ghost btn-sm absolute right-2 top-2"
-            @click="closeAnswer"
-        >
-          <i class="ri-close-line"></i>
-        </button>
-      </form>
-      <h3 class="alidongfang text-lg font-bold">AI解析</h3>
-      <div class="opposans py-4 break-words whitespace-break-spaces">{{ answer }}</div>
-      <form class="top-2 flex justify-end">
-        <button class="opposans btn" @click.prevent="clipAnswer">
-          <i class="ri-clipboard-line"></i>复制
-        </button>
-      </form>
-    </div>
-  </dialog>
+  <!--  <dialog ref="resultDialog" class="modal">-->
+  <!--    <div class="modal-box">-->
+  <!--      <form method="dialog">-->
+  <!--        <button-->
+  <!--            class="btm-circle btn btn-ghost btn-sm absolute right-2 top-2"-->
+  <!--            @click="closeAnswer"-->
+  <!--        >-->
+  <!--          <i class="ri-close-line"></i>-->
+  <!--        </button>-->
+  <!--      </form>-->
+  <!--      <h3 class="alidongfang text-lg font-bold">AI解析</h3>-->
+  <!--      <div class="opposans py-4 break-words whitespace-break-spaces">{{ answer }}</div>-->
+  <!--      <form class="top-2 flex justify-end">-->
+  <!--        <button class="opposans btn" @click.prevent="clipAnswer">-->
+  <!--          <i class="ri-clipboard-line"></i>复制-->
+  <!--        </button>-->
+  <!--      </form>-->
+  <!--    </div>-->
+  <!--  </dialog>-->
 
 
   <div class="card bg-[--panel-color] shadow-2xl pl-2 pr-2">
     <div class="flex flex-col">
       <h1 class="opposans mt-1 text-[16px] text-[--black-light-color]">题目要求</h1>
-      <div class="h-[280px] overflow-y-auto opposans break-words whitespace-break-spaces">
+      <div class="h-[240px] overflow-y-auto opposans break-words whitespace-break-spaces">
         {{ question }}
       </div>
     </div>
     <div class="divider mt-1 mb-1"></div>
-    <div class="flex flex-col">
-      <h1 class="opposans text-[16px] text-[--black-light-color]">你的答案</h1>
-      <div class="h-[200px] overflow-y-auto opposans">
-        <el-input
-            v-model="answerInput"
-            :rows="8"
-            placeholder="输入您的答案"
-            resize="none"
-            type="textarea"
-        />
+    <div class="grid grid-rows-1 grid-cols-2 gap-1">
+      <div class="flex flex-col">
+        <h1 class="opposans text-[16px] text-[--black-light-color]">答案解析</h1>
+        <div class="h-[240px] overflow-y-auto opposans break-words whitespace-break-spaces">
+          {{ answer }}
+        </div>
       </div>
+      <div class="flex flex-col">
+        <h1 class="opposans text-[16px] text-[--black-light-color]">评分标准</h1>
+        <div class="h-[240px] overflow-y-auto opposans break-words whitespace-break-spaces">
+          {{ standard }}
+        </div>
+      </div>
+      <!--      <div class="h-[240px] overflow-y-auto opposans">-->
+      <!--        <el-input-->
+      <!--            v-model="answerInput"-->
+      <!--            :rows="8"-->
+      <!--            placeholder="输入您的答案"-->
+      <!--            resize="none"-->
+      <!--            type="textarea"-->
+      <!--        />-->
+      <!--      </div>-->
     </div>
     <div class="divider mt-1 mb-1"></div>
-    <el-button-group class="ml-auto mr-auto">
-      <el-button plain type="success" @click="chatOpen">AI交流</el-button>
-      <el-button plain type="primary" @click="sendAnswer">提交答案</el-button>
-      <el-button plain type="primary" @click="viewAnswer">查看解析</el-button>
-      <el-button plain type="primary" @click="exportWord">导出word</el-button>
-    </el-button-group>
+    <div class="flex flex-row justify-center w-full">
+      <el-button class="opposans w-1/4 " plain type="primary" @click="exportWord">导出word</el-button>
+    </div>
+    <!--    <el-button-group class="ml-auto mr-auto">-->
+    <!--      <el-button plain type="success" @click="chatOpen">AI交流</el-button>-->
+    <!--      <el-button plain type="primary" @click="sendAnswer">提交答案</el-button>-->
+    <!--      <el-button plain type="primary" @click="viewAnswer">查看解析</el-button>-->
+    <!--    </el-button-group>-->
   </div>
 </template>
 

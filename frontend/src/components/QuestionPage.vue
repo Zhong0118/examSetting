@@ -17,7 +17,6 @@ const createTopic = async () => {
   const target = questionStore.question?.target;
   const type = questionStore.question?.type;
   const difficult = questionStore.question?.difficult;
-  console.log(difficult)
   if (target?.length === 0 || type === '' || difficult === 0) {
     ElMessage({
       message: '请选择学科类型、题目种类和难度系数',
@@ -57,7 +56,12 @@ const createTopic = async () => {
       const result = await response.json()
       const result_str = result.message;
       const result_arr = result_str.split('答案解析：');
-      titleStore.setTitle({question: result_arr[0], answer: result_arr[1]})
+      const result_arr2 = result_arr[1].split('评分标准：');
+      titleStore.setTitle({question: result_arr[0], answer: result_arr2[0], standard: result_arr2[1]})
+      ElMessage({
+        message: '题目生成完毕',
+        type: 'success',
+      })
       emitter.emit('answer-page-setting')
     }
   } catch (e) {
@@ -66,6 +70,44 @@ const createTopic = async () => {
       type: 'error',
     })
   }
+}
+
+const randomRequire = async () => {
+  const target = questionStore.question?.target;
+  const type = questionStore.question?.type;
+  const difficult = questionStore.question?.difficult;
+  if (target?.length === 0 || type === '' || difficult === 0) {
+    ElMessage({
+      message: '请选择学科类型、题目种类和难度系数',
+      type: 'warning',
+    })
+    return
+  }
+  const response = await fetch("http://localhost:5000/api/requirement", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      target: target,
+      type: type,
+      difficult: difficult,
+    }),
+  });
+  const reader = response.body!.getReader();
+  while (true) {
+    const {done, value} = await reader.read();
+    const chunk = new TextDecoder().decode(value);
+    questionNeed.value += chunk;
+    if (done) {
+      break;
+    }
+  }
+  reader.releaseLock();
+  ElMessage({
+    message: '随机需求生成完毕',
+    type: 'success',
+  })
 }
 
 function toWhole() {
@@ -89,6 +131,7 @@ function toWhole() {
     />
     <div class="divider mt-1 mb-1"></div>
     <div class="flex flex-row justify-center w-full">
+      <el-button class="opposans w-1/4 " type="info" @click="randomRequire">生成随机需求</el-button>
       <el-button class="opposans w-1/4 " type="success" @click="createTopic">提交任务需求</el-button>
       <el-button class="opposans w-1/4 " type="warning" @click="toWhole">切换到整卷</el-button>
     </div>

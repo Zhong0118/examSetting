@@ -4,7 +4,7 @@ import {CircleCheck, CircleClose, Upload, Warning} from "@element-plus/icons-vue
 // @ts-ignore
 import emitter from "@/utils/mitter.js";
 
-import {options, topics} from '@/utils/objects'
+import {buoptions, options, topics} from '@/utils/objects'
 import DocUpload from "@/components/question/DocUpload.vue";
 import {useQuestionStore} from "@/stores/question";
 
@@ -64,7 +64,7 @@ onMounted(() => {
       <span class="mt-1 text-[14px] text-[--black-light-color]">目标科目:</span>
       <el-cascader
           v-model="target"
-          :options="options"
+          :options="buoptions"
           :props="p"
           class="w-[90%]"
           placeholder="目标"

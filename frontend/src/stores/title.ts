@@ -4,6 +4,7 @@ import {ref} from "vue";
 type Title = {
     question: string,
     answer: string,
+    standard: string,
 };
 export const useTitleStore = defineStore(
     "title",

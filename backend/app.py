@@ -11,7 +11,7 @@ system_basic_info1 = """
 你是智能出题系统，请根据我为你提供的基础信息进行出题。你需要明确不同年级、不同科目、不同知识点的出题要求，以及出题的难度等级和出题类型。
 对于每一道题请以严格的格式进行区分。
 题目请以'题目要求：'为开头，如果是单选题和多选题的话，请以'题干：'为开头，以'A.选项1'、'B.选项2'、'C.选项3'、'D.选项4'等格式进行选项的描述。
-同时提供答案解析，请以'答案解析：'为开头。
+同时提供答案解析和评分标准，请分别以'答案解析：'和'评分标准：'为开头。
 """
 difficulties = {'1': '非常简单', '2': '简单', '3': '正常', '4': '较难', '5': '困难'}
 title_types = {'单选': '单选题', '多选': '多选题', '填空': '填空题', '判断': '判断题', '解答': '解答题'}
@@ -31,6 +31,16 @@ system_basic_info4 = """
 请根据需求依次给出题目和答案解析，同时需要题目序号。
 """
 
+system_basic_info5 = """
+你是智能出题系统，你会得到我提供给你的相关专业、学科和知识点组成的文本信息，请根据我提供给你的难度和题目类型为我生成合适的题目要求和目的，
+这个并不是题目本身，而是一些背景条件和考察范围。
+"""
+
+system_basic_info6 = """
+你是智能出题系统，你会得到我提供给你的相关专业、学科和知识点组成的文本信息，请根据我提供给你的多个知识点为我生成合适的题目要求和目的，
+这个并不是题目本身，而是一些背景条件和考察范围。
+"""
+
 
 # 流式输出
 def generate_stream(ai_response):
@@ -40,6 +50,55 @@ def generate_stream(ai_response):
             yield f"{chunk.choices[0].delta.content}"
     except GeneratorExit:
         print("Client disconnected")
+
+
+@app.route('/api/requirement', methods=['POST'])
+def auto_requirement():
+    data = request.json
+    # 类型
+    tt = data.get('type')
+    title_type = title_types.get(tt)
+    # 难度
+    dd = data.get('difficult')
+    difficult = difficulties.get(str(dd))
+    target = data.get('target')
+    target_str = ''
+    for i in target:
+        target_str += i
+    title_need = f"题目考察范围：{target_str}\n题目类型：{title_type}\n出题难度：{difficult}"
+    ai_response = client.chat.completions.create(
+        model="glm-4",
+        messages=[
+            {"role": "system", "content": system_basic_info5},
+            {"role": "user", "content": title_need}
+        ],
+        stream=True,
+    )
+    return Response(generate_stream(ai_response), content_type='text/event-stream')
+
+
+@app.route('/api/requirement2', methods=['POST'])
+def auto_requirement2():
+    data = request.json
+    target = data.get('target')
+    print(target)
+    target_set = []
+    for i in range(len(target)):
+        for j in target[i]:
+            if j not in target_set:
+                target_set.append(j)
+    target_str = ''
+    for i in target_set:
+        target_str += i + '、'
+    ai_response = client.chat.completions.create(
+        model="glm-4",
+        messages=[
+            {"role": "system", "content": system_basic_info6},
+            {"role": "user", "content": target_str}
+        ],
+        stream=True,
+    )
+    return Response(generate_stream(ai_response), content_type='text/event-stream')
 
 
 # 生成单个题的API
@@ -69,7 +128,6 @@ def single_chat():
         ],
     )
     title_info = ai_response.choices[0].message.content
-    print(title_info)
     return jsonify({'info': 'success', 'message': title_info}), 200
 
 

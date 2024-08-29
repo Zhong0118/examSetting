@@ -5,7 +5,7 @@ import {ElMessage, ElMessageBox} from "element-plus";
 import emitter from "@/utils/mitter";
 // @ts-ignore
 import router from "@/router";
-import {options} from "@/utils/objects";
+import {buoptions} from "@/utils/objects";
 import {Upload} from "@element-plus/icons-vue";
 import DocUpload from "@/components/question/DocUpload.vue";
 import {marked} from "marked";
@@ -24,6 +24,47 @@ const num6 = ref(0)
 
 const questionNeed = ref('')
 const examTitles = ref();
+
+const randomRequire = async () => {
+  if (target.value.length === 0) {
+    ElMessage({
+      message: '请选择需要的科目',
+      type: 'warning',
+    })
+    return
+  }
+  const response = await fetch("http://localhost:5000/api/requirement2", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      target: target.value,
+      num1: num1.value,
+      num2: num2.value,
+      num3: num3.value,
+      num4: num4.value,
+      num5: num5.value,
+      num6: num6.value,
+    }),
+  });
+  const reader = response.body!.getReader();
+  while (true) {
+    const {done, value} = await reader.read();
+    const chunk = new TextDecoder().decode(value);
+    questionNeed.value += chunk;
+    if (done) {
+      break;
+    }
+  }
+  reader.releaseLock();
+  ElMessage({
+    message: '随机需求生成完毕',
+    type: 'success',
+  })
+}
+
+
 const createTopic = async () => {
   if (target.value.length === 0 || (num1.value === 0 && num2.value === 0 && num3.value === 0 && num4.value === 0 && num5.value === 0 && num6.value === 0)) {
     ElMessage({
@@ -157,7 +198,7 @@ function toSingle() {
         <span class="mt-1 text-[14px] text-[--black-light-color]">目标科目:</span>
         <el-cascader
             v-model="target"
-            :options="options"
+            :options="buoptions"
             :props="p"
             class="w-[90%]"
             collapse-tags
@@ -215,6 +256,7 @@ function toSingle() {
     </div>
     <div class="divider mt-1 mb-1"></div>
     <div class="flex flex-row justify-center w-full">
+      <el-button class="opposans w-1/4 " type="info" @click="randomRequire">生成随机需求</el-button>
       <el-button class="opposans w-1/4 " type="success" @click="createTopic">提交任务需求</el-button>
       <el-button class="opposans w-1/4 " type="warning" @click="toSingle">切换到单题</el-button>
     </div>
