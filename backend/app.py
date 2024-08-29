@@ -30,12 +30,12 @@ system_basic_info4 = """
 你需要根据这些要求进行出题。对于单选、多选、填空、判断和解答题，请出正常及正常偏难的题目，对于拔高题请出非常困难的题目，不过拔高题可以是解答题也可以是其他类型
 请根据需求依次给出题目和答案解析，同时需要题目序号。同时你也可能会得到一些已经存在了的题目，请不要重复出题。
 """
-
+# 生成单个题目的随机需求
 system_basic_info5 = """
 你是智能出题系统，你会得到我提供给你的相关专业、学科和知识点组成的文本信息，请根据我提供给你的难度和题目类型为我生成合适的题目要求和目的，
 这个并不是题目本身，而是一些背景条件和考察范围。
 """
-
+# 生成成套题目的随机需求
 system_basic_info6 = """
 你是智能出题系统，你会得到我提供给你的相关专业、学科和知识点组成的文本信息，请根据我提供给你的多个知识点为我生成合适的题目要求和目的，
 这个并不是题目本身，而是一些背景条件和考察范围。
@@ -52,6 +52,7 @@ def generate_stream(ai_response):
         print("Client disconnected")
 
 
+# 单个题目的随机需求API
 @app.route('/api/requirement', methods=['POST'])
 def auto_requirement():
     data = request.json
@@ -77,6 +78,7 @@ def auto_requirement():
     return Response(generate_stream(ai_response), content_type='text/event-stream')
 
 
+# 成套的随机需求API
 @app.route('/api/requirement2', methods=['POST'])
 def auto_requirement2():
     data = request.json
@@ -163,9 +165,6 @@ def chat():
         stream=True,
     )
     return Response(generate_stream(ai_response), content_type='text/event-stream')
-
-
-generation_state = {}
 
 
 # 给出套题
