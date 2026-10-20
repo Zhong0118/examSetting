@@ -1,214 +1,282 @@
-from flask import Flask, request, jsonify, Response
-from flask_cors import CORS
-from zhipuai import ZhipuAI
+"""ExamHub same-origin JSON API."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import secrets
+import sqlite3
+import time
+from flask import Flask, abort, g, jsonify, request
+from werkzeug.exceptions import HTTPException
+from werkzeug.security import check_password_hash, generate_password_hash
+from db import close_db, get_db, init_db
+from repository import (accessible, detail, insert_set, now, questions_without_answers,
+                        summary, text_value, uid, validate_set, version_value)
 
-app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
-
-client = ZhipuAI(api_key="557c1b1736b88908bc81eeba0b8f46ee.atOnzh84zSgaRzSx")  # 请填写您自己的APIKey
-# 出单个题
-system_basic_info1 = """
-你是智能出题系统，请根据我为你提供的基础信息进行出题。你需要明确不同年级、不同科目、不同知识点的出题要求，以及出题的难度等级和出题类型。
-对于每一道题请以严格的格式进行区分。
-题目请以'题目要求：'为开头，如果是单选题和多选题的话，请以'题干：'为开头，以'A.选项1'、'B.选项2'、'C.选项3'、'D.选项4'等格式进行选项的描述。
-同时提供答案解析和评分标准，请分别以'答案解析：'和'评分标准：'为开头。
-"""
-difficulties = {'1': '非常简单', '2': '简单', '3': '正常', '4': '较难', '5': '困难'}
-title_types = {'单选': '单选题', '多选': '多选题', '填空': '填空题', '判断': '判断题', '解答': '解答题'}
-title_info = ''
-# 单个题目评分解析
-system_basic_info2 = """
-你是智能出题系统，此时你已得知题目需求以及用户答案，请为用户的答案进行评分评价和建议。
-"""
-# 单个题目的chat
-system_basic_info3 = """
-你是智能出题系统，默认得知了题目需求和结果，请根据用户发来的信息进行对话交流。
-"""
-# 成套题目的背景信息
-system_basic_info4 = """
-你是智能出题系统，你会得到我提供给你的相应年级的某学科考察的一些不同知识点，同时会得到为你提供的单选题、多选题、填空题、判断题、解答题和拔高题的数量需求，
-你需要根据这些要求进行出题。对于单选、多选、填空、判断和解答题，请出正常及正常偏难的题目，对于拔高题请出非常困难的题目，不过拔高题可以是解答题也可以是其他类型
-请根据需求依次给出题目和答案解析，同时需要题目序号。同时你也可能会得到一些已经存在了的题目，请不要重复出题。
-"""
-# 生成单个题目的随机需求
-system_basic_info5 = """
-你是智能出题系统，你会得到我提供给你的相关专业、学科和知识点组成的文本信息，请根据我提供给你的难度和题目类型为我生成合适的题目要求和目的，
-这个并不是题目本身，而是一些背景条件和考察范围。
-"""
-# 生成成套题目的随机需求
-system_basic_info6 = """
-你是智能出题系统，你会得到我提供给你的相关专业、学科和知识点组成的文本信息，请根据我提供给你的多个知识点为我生成合适的题目要求和目的，
-这个并不是题目本身，而是一些背景条件和考察范围。
-"""
+SESSION_AGE = 60 * 60 * 24 * 30
 
 
-# 流式输出
-def generate_stream(ai_response):
+def body():
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        abort(400, description='请求必须是 JSON 对象')
+    return data
+
+
+def public_user(row):
+    return {key: row[key] for key in ('id', 'name', 'email')}
+
+
+def token_hash(token):
+    return hashlib.sha256(token.encode()).hexdigest()
+
+
+def new_session(user=None):
+    db = get_db()
+    if user is None:
+        user = dict(id=uid(), name='访客', email=None)
+        db.execute('INSERT INTO users(id,name) VALUES (?,?)', (user['id'], user['name']))
+    if getattr(g, 'session_hash', None):
+        db.execute('DELETE FROM sessions WHERE token_hash=?', (g.session_hash,))
+    token = secrets.token_urlsafe(32)
+    g.session_hash = token_hash(token)
+    db.execute('INSERT INTO sessions VALUES (?,?,?)', (g.session_hash, user['id'], int(time.time()) + SESSION_AGE))
+    db.commit()
+    g.user = public_user(user)
+    g.new_token = token
+    return g.user
+
+
+def credentials(data):
+    email = text_value(data, 'email', 254, True).lower()
+    password = data.get('password')
+    if not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', email) or not isinstance(password, str) or not 8 <= len(password) <= 256:
+        abort(400, description='邮箱格式不正确或密码长度不在 8 至 256 字符内')
+    return email, password
+
+
+def create_app(config=None):
+    app = Flask(__name__)
+    app.config.from_mapping(DATABASE=os.environ.get('DATABASE', str(Path(__file__).parent / 'instance' / 'examhub.sqlite3')),
+                            MAX_CONTENT_LENGTH=2 * 1024 * 1024, SESSION_COOKIE_NAME='examhub_session',
+                            SESSION_COOKIE_SECURE=os.environ.get('SESSION_COOKIE_SECURE', '').lower() == 'true')
+    if config:
+        app.config.update(config)
+    Path(app.config['DATABASE']).parent.mkdir(parents=True, exist_ok=True)
+    app.teardown_appcontext(close_db)
+    with app.app_context():
+        init_db()
+
+    @app.errorhandler(HTTPException)
+    def http_error(error):
+        return jsonify(error=error.description), error.code
+
+    @app.before_request
+    def authenticate():
+        if request.method in ('POST', 'PUT', 'PATCH', 'DELETE') and request.headers.get('X-Requested-With') != 'ExamHub':
+            abort(403, description='缺少 ExamHub 请求头')
+        token = request.cookies.get(app.config['SESSION_COOKIE_NAME'], '')
+        g.session_hash = token_hash(token) if token else None
+        row = get_db().execute('SELECT u.* FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>?',
+                               (g.session_hash, int(time.time()))).fetchone()
+        if row is None:
+            new_session()
+        else:
+            g.user = public_user(row)
+        expected_user = request.headers.get('X-Expected-User')
+        if request.method in ('POST', 'PUT', 'PATCH', 'DELETE') and expected_user and expected_user != g.user['id']:
+            return jsonify(error='账户已在其他页面切换，请刷新后继续；未提交的作答仍保存在原账户下',
+                           code='session_changed'), 409
+
+    @app.after_request
+    def secure_response(response):
+        response.headers['Cache-Control'] = 'no-store'
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        if getattr(g, 'new_token', None):
+            response.set_cookie(app.config['SESSION_COOKIE_NAME'], g.new_token, max_age=SESSION_AGE,
+                                httponly=True, samesite='Lax', secure=app.config['SESSION_COOKIE_SECURE'])
+        return response
+
+    @app.get('/api/session')
+    def session():
+        return jsonify(user=g.user)
+
+    @app.post('/api/auth/register')
+    def register():
+        data = body()
+        name = text_value(data, 'name', 80, True)
+        email, password = credentials(data)
+        if g.user['email'] is not None:
+            abort(409, description='当前账户已经注册')
+        db = get_db()
+        try:
+            db.execute('UPDATE users SET name=?,email=?,password_hash=? WHERE id=?',
+                       (name, email, generate_password_hash(password), g.user['id']))
+            db.commit()
+        except sqlite3.IntegrityError:
+            db.rollback()
+            abort(409, description='邮箱已注册')
+        return jsonify(user=new_session(dict(id=g.user['id'], name=name, email=email)))
+
+    @app.post('/api/auth/login')
+    def login():
+        data = body()
+        # A wrong short password remains an authentication failure.
+        email = text_value(data, 'email', 254, True).lower()
+        password = data.get('password')
+        if not isinstance(password, str) or not password or len(password) > 256:
+            abort(400, description='密码格式不正确')
+        row = get_db().execute('SELECT * FROM users WHERE email=?', (email,)).fetchone()
+        if row is None or not row['password_hash'] or not check_password_hash(row['password_hash'], password):
+            abort(401, description='邮箱或密码不正确')
+        db = get_db()
+        departing_id = g.user['id']
+        with db:
+            db.execute('BEGIN IMMEDIATE')
+            # Recheck under the write lock: a concurrent registration must not
+            # turn an authenticated account into a source for guest migration.
+            departing = db.execute('SELECT email FROM users WHERE id=?', (departing_id,)).fetchone()
+            migrate_guest = departing['email'] is None and departing_id != row['id']
+            if migrate_guest:
+                db.execute('UPDATE sets SET owner_id=? WHERE owner_id=?', (row['id'], departing_id))
+                db.execute('UPDATE attempts SET user_id=? WHERE user_id=?', (row['id'], departing_id))
+                db.execute('UPDATE ai_jobs SET user_id=? WHERE user_id=?', (row['id'], departing_id))
+                db.execute('INSERT OR IGNORE INTO bookmarks(user_id,set_id) SELECT ?,set_id FROM bookmarks WHERE user_id=?',
+                           (row['id'], departing_id))
+                db.execute('DELETE FROM bookmarks WHERE user_id=?', (departing_id,))
+            # new_session commits the migration and session replacement together.
+            user = new_session(row)
+        if migrate_guest:
+            app.extensions.get('ai_credentials', {}).pop(departing_id, None)
+        return jsonify(user=user)
+
+    @app.post('/api/auth/logout')
+    def logout():
+        app.extensions.get('ai_credentials', {}).pop(g.user['id'], None)
+        return jsonify(user=new_session())
+
+    @app.get('/api/sets')
+    def list_sets():
+        scope = request.args.get('scope', 'mine')
+        conditions = {'mine': 's.owner_id=?', 'discover': "s.visibility='public'", 'saved': 'EXISTS (SELECT 1 FROM bookmarks b WHERE b.set_id=s.id AND b.user_id=?)'}
+        if scope not in conditions:
+            abort(400, description='scope 格式不正确')
+        params = [g.user['id']] if scope != 'discover' else []
+        sql = 'SELECT s.*,u.name AS author FROM sets s JOIN users u ON u.id=s.owner_id WHERE '+conditions[scope]
+        sql += " AND (s.owner_id=? OR s.visibility!='private')"
+        params.append(g.user['id'])
+        if request.args.get('q'):
+            sql += ' AND (instr(lower(s.title),lower(?))>0 OR instr(lower(s.description),lower(?))>0)'
+            params.extend([request.args['q']] * 2)
+        if request.args.get('topic'):
+            sql += ' AND s.topic=?'
+            params.append(request.args['topic'])
+        rows = get_db().execute(sql+' ORDER BY s.updated_at DESC,s.id', params).fetchall()
+        return jsonify(sets=[summary(row) for row in rows])
+
+    @app.post('/api/sets')
+    def create_set():
+        data = validate_set(body())
+        db = get_db()
+        with db:
+            set_id = insert_set(data, g.user['id'])
+        return jsonify(set=detail(accessible(set_id))), 201
+
+    @app.get('/api/sets/<set_id>')
+    def get_set(set_id):
+        return jsonify(set=detail(accessible(set_id)))
+
+    @app.put('/api/sets/<set_id>')
+    def update_set(set_id):
+        accessible(set_id, owner=True)
+        payload = body()
+        version = version_value(payload)
+        data = validate_set(payload)
+        db = get_db()
+        with db:
+            changed = db.execute('UPDATE sets SET title=?,description=?,topic=?,visibility=?,questions=?,updated_at=?,version=version+1 WHERE id=? AND owner_id=? AND version=?',
+                                 (data['title'], data['description'], data['topic'], data['visibility'], json.dumps(data['questions'], ensure_ascii=False), now(), set_id, g.user['id'], version))
+            if changed.rowcount != 1:
+                abort(409, description='题集已更新，请刷新后重试')
+        return jsonify(set=detail(accessible(set_id)))
+
+    @app.delete('/api/sets/<set_id>')
+    def delete_set(set_id):
+        accessible(set_id, owner=True)
+        db = get_db()
+        with db:
+            db.execute('DELETE FROM sets WHERE id=? AND owner_id=?', (set_id, g.user['id']))
+        return jsonify(ok=True)
+
+    @app.post('/api/sets/<set_id>/fork')
+    def fork_set(set_id):
+        db = get_db()
+        with db:
+            db.execute('BEGIN IMMEDIATE')
+            row = accessible(set_id)
+            data = {key: row[key] for key in ('title', 'description', 'topic')}
+            data.update(visibility='private', questions=json.loads(row['questions']))
+            for q in data['questions']:
+                q['id'] = uid()
+            new_id = insert_set(data, g.user['id'], set_id)
+        return jsonify(set=detail(accessible(new_id))), 201
+
+    @app.post('/api/sets/<set_id>/bookmark')
+    def bookmark(set_id):
+        db = get_db()
+        with db:
+            db.execute('BEGIN IMMEDIATE')
+            accessible(set_id)
+            removed = db.execute('DELETE FROM bookmarks WHERE user_id=? AND set_id=?', (g.user['id'], set_id)).rowcount
+            if not removed:
+                db.execute('INSERT INTO bookmarks VALUES (?,?)', (g.user['id'], set_id))
+        return jsonify(bookmarked=not bool(removed))
+
+    @app.get('/api/sets/<set_id>/practice')
+    def practice(set_id):
+        row = accessible(set_id)
+        return jsonify(set=summary(row), questions=questions_without_answers(row))
+
+    @app.post('/api/sets/<set_id>/attempts')
+    def submit(set_id):
+        db = get_db()
+        with db:
+            db.execute('BEGIN IMMEDIATE')
+            row = accessible(set_id)
+            data = body()
+            version = version_value(data)
+            if row['version'] != version:
+                abort(409, description='题集已更新，请重新开始练习')
+            questions = json.loads(row['questions'])
+            answers = data.get('answers')
+            valid_ids = {q['id'] for q in questions}
+            if not isinstance(answers, dict) or any(k not in valid_ids or not isinstance(v, str) or len(v) > 20000 for k, v in answers.items()):
+                abort(400, description='作答内容格式不正确')
+            results = []
+            for q in questions:
+                user_answer = answers.get(q['id'], '')
+                results.append(dict(questionId=q['id'], **{k: v for k, v in q.items() if k != 'id'},
+                                    userAnswer=user_answer, correct=(user_answer == q['answer']) if q['type'] == 'single' else None))
+            attempt = dict(id=uid(), setId=set_id, setTitle=row['title'], version=version, createdAt=now(),
+                           correct=sum(r['correct'] is True for r in results), total=len(results), results=results)
+            db.execute('INSERT INTO attempts VALUES (?,?,?)', (attempt['id'], g.user['id'], json.dumps(attempt, ensure_ascii=False)))
+        return jsonify(attempt=attempt), 201
+
+    @app.get('/api/attempts')
+    def attempts():
+        rows = get_db().execute('SELECT snapshot FROM attempts WHERE user_id=? ORDER BY rowid DESC', (g.user['id'],)).fetchall()
+        return jsonify(attempts=[json.loads(row['snapshot']) for row in rows])
+
     try:
-        for chunk in ai_response:
-            # Simulating a delay for each message chunk
-            yield f"{chunk.choices[0].delta.content}"
-    except GeneratorExit:
-        print("Client disconnected")
-
-
-# 单个题目的随机需求API
-@app.route('/api/requirement', methods=['POST'])
-def auto_requirement():
-    data = request.json
-    # 类型
-    tt = data.get('type')
-    title_type = title_types.get(tt)
-    # 难度
-    dd = data.get('difficult')
-    difficult = difficulties.get(str(dd))
-    target = data.get('target')
-    target_str = ''
-    for i in target:
-        target_str += i
-    title_need = f"题目考察范围：{target_str}\n题目类型：{title_type}\n出题难度：{difficult}"
-    ai_response = client.chat.completions.create(
-        model="glm-4",
-        messages=[
-            {"role": "system", "content": system_basic_info5},
-            {"role": "user", "content": title_need}
-        ],
-        stream=True,
-    )
-    return Response(generate_stream(ai_response), content_type='text/event-stream')
-
-
-# 成套的随机需求API
-@app.route('/api/requirement2', methods=['POST'])
-def auto_requirement2():
-    data = request.json
-    target = data.get('target')
-    print(target)
-    target_set = []
-    for i in range(len(target)):
-        for j in target[i]:
-            if j not in target_set:
-                target_set.append(j)
-    target_str = ''
-    for i in target_set:
-        target_str += i + '、'
-    ai_response = client.chat.completions.create(
-        model="glm-4",
-        messages=[
-            {"role": "system", "content": system_basic_info6},
-            {"role": "user", "content": target_str}
-        ],
-        stream=True,
-    )
-    return Response(generate_stream(ai_response), content_type='text/event-stream')
-
-
-# 生成单个题的API
-@app.route('/api/single', methods=['POST'])
-def single_chat():
-    global title_info
-    data = request.json
-    # 类型
-    tt = data.get('type')
-    title_type = title_types.get(tt)
-    # 难度
-    dd = data.get('difficult')
-    difficult = difficulties.get(str(dd))
-    # 题目要求
-    need = data.get('questionNeed')
-    # 年级、学科、知识点
-    target = data.get('target')
-    target_str = ''
-    for i in target:
-        target_str += i
-    title_need = f"题目考察范围：{target_str}\n题目类型：{title_type}\n出题难度：{difficult}\n题目要求：{need}"
-    ai_response = client.chat.completions.create(
-        model="glm-4",
-        messages=[
-            {"role": "system", "content": system_basic_info1},
-            {"role": "user", "content": title_need}
-        ],
-    )
-    title_info = ai_response.choices[0].message.content
-    return jsonify({'info': 'success', 'message': title_info}), 200
-
-
-# 直接获得分析的结果，非对话
-@app.route('/api/check', methods=['POST'])
-def check_chat():
-    global title_info
-    data = request.json
-    user_message = data.get('message')
-    ai_response = client.chat.completions.create(
-        model="glm-4",
-        messages=[
-            {"role": "system", "content": system_basic_info2 + '。题目信息是：' + title_info},
-            {"role": "user", "content": user_message}
-        ],
-        stream=True,
-    )
-    return Response(generate_stream(ai_response), content_type='text/event-stream')
-
-
-# 对话
-@app.route('/api/chat', methods=['POST'])
-def chat():
-    global title_info
-    data = request.json
-    user_message = data.get('message')
-    ai_response = client.chat.completions.create(
-        model="glm-4",
-        messages=[
-            {"role": "system", "content": system_basic_info3 + '。题目信息是：' + title_info},
-            {"role": "user", "content": user_message}
-        ],
-        stream=True,
-    )
-    return Response(generate_stream(ai_response), content_type='text/event-stream')
-
-
-# 给出套题
-@app.route('/api/whole', methods=['GET', 'POST'])
-def ai_assistant():
-    if request.method == 'GET':
-        return jsonify({'success': True, 'message': 'AI assistant is running'})
+        from ai import register_ai
+    except ModuleNotFoundError as error:
+        if error.name != 'ai':
+            raise
     else:
-        data = request.json
-        need = data.get('questionNeed')
-        num1 = data.get('num1')
-        num2 = data.get('num2')
-        num3 = data.get('num3')
-        num4 = data.get('num4')
-        num5 = data.get('num5')
-        num6 = data.get('num6')
-        title_type = f"{num1}道单选题、{num2}道多选题、{num3}道填空题、{num4}道判断题、{num5}道解答题、{num6}道拔高题"
-        target = data.get('target')
-        existing = data.get('existing')
-        print(target)
-        target_set = []
-        for i in range(len(target)):
-            for j in target[i]:
-                if j not in target_set:
-                    target_set.append(j)
-        target_str = ''
-        for i in target_set:
-            target_str += i + '、'
-        user_message = f"请忘记之前的相关内容。题目考察范围：{target_str}\n题目所需类型及数量：{title_type}\n题目要求：{need}\n已有题目：{existing}"
-        ai_response = client.chat.completions.create(
-            model="glm-4",
-            messages=[
-                {"role": "system", "content": system_basic_info4},
-                {"role": "user", "content": user_message}
-            ],
-            stream=True,
-        )
-        return Response(generate_stream(ai_response), content_type='text/event-stream')
-
-
-@app.route('/')
-def hello_world():  # put application's code here
-    return 'Hello World!'
+        register_ai(app)
+    return app
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    create_app().run(host='127.0.0.1', port=int(os.environ.get('PORT', '5000')))
