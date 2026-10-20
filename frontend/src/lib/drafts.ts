@@ -9,7 +9,7 @@ export function migrateGuestDrafts(from: {id: string; email: string | null}, to:
   if(from.email || !to.email || from.id === to.id) return 0
   let conflicts = 0
   const keys = Array.from({length:localStorage.length}, (_,i)=>localStorage.key(i)).filter((key): key is string => !!key)
-  for(const kind of ['answers','editor']) {
+  for(const kind of ['answers','editor','tutor:answer','tutor:command']) {
     const prefix = `examhub:${kind}:${from.id}:`
     for(const key of keys.filter(key=>key.startsWith(prefix))) {
       const target = `examhub:${kind}:${to.id}:${key.slice(prefix.length)}`
@@ -34,5 +34,7 @@ export function migrateGuestDrafts(from: {id: string; email: string | null}, to:
     if(localStorage.getItem(target)) conflicts++
     else localStorage.setItem(target,guestJob)
   }
+  const tutorCreate=localStorage.getItem(`examhub:tutor:create:${from.id}`)
+  if(tutorCreate){const target=`examhub:tutor:create:${to.id}`;if(localStorage.getItem(target))conflicts++;else localStorage.setItem(target,tutorCreate)}
   return conflicts
 }

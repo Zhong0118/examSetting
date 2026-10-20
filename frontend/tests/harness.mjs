@@ -27,6 +27,6 @@ export async function renderView(path, bindings, names, prepare=()=>{}) {
   const app=Vue.createSSRApp(component)
   app.component('RouterLink',{setup:(_,ctx)=>()=>Vue.h('a',null,ctx.slots.default?.())})
   app.component('Icon',{render:()=>Vue.h('svg')})
-  for(const name of ['AttemptResult','SetList','CitationCard','QualityPanel','DocumentRange','ComparisonReport'])app.component(name,{render:()=>null})
+  for(const name of ['AttemptResult','SetList','CitationCard','QualityPanel','DocumentRange','ComparisonReport','TutorBenchmark','TutorTranscript'])app.component(name,{render:()=>null})
   return server.renderToString(app)
 }

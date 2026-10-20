@@ -7,6 +7,8 @@ const router = createRouter({ history: createWebHistory(), scrollBehavior: () =>
   {path:'/sets/:id/edit', component:() => import('../views/EditorView.vue'), meta:{title:'编辑题集'}},
   {path:'/sets/:id', component:() => import('../views/DetailView.vue'), meta:{title:'题集详情'}},
   {path:'/practice/:id', component:() => import('../views/PracticeView.vue'), meta:{title:'专注练习'}},
+  {path:'/tutor',component:()=>import('../views/TutorSetupView.vue'),meta:{title:'教学教练'}},
+  {path:'/tutor/:id',component:()=>import('../views/TutorSessionView.vue'),meta:{title:'教学会话'}},
   {path:'/history', component:() => import('../views/HistoryView.vue'), meta:{title:'学习记录'}},
   {path:'/documents',component:()=>import('../views/DocumentsView.vue'),meta:{title:'我的教材'}},
   {path:'/documents/:id',component:()=>import('../views/DocumentReaderView.vue'),meta:{title:'教材阅读'}},

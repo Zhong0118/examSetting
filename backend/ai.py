@@ -151,6 +151,15 @@ def register_ai(app):
     def public_config(settings):
         return {'configured': bool(settings['apiKey']), 'baseUrl': settings['baseUrl'], 'model': settings['model']}
 
+    def configured_settings(user_id):
+        settings = config_for(user_id)
+        if not settings['apiKey']:
+            raise ValueError('请先在模型设置中配置 API 密钥')
+        validate_url(settings['baseUrl'])
+        return settings
+
+    app.extensions['ai_settings'] = configured_settings
+
     def job_value(row):
         return {'id': row['id'], 'status': row['status'], 'error': row['error'], 'questions': json.loads(row['questions']), 'createdAt': row['created_at'],
                 'metadata': json.loads(row['metadata']), 'quality': json.loads(row['quality']) if row['quality'] else None}

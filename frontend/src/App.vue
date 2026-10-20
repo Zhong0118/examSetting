@@ -7,7 +7,7 @@ import Modal from './components/Modal.vue'
 import { activateDrawer } from './lib/drawer'
 import { user, notice, initSession, message, authOpen, sessionFrozen, identityChanging, sessionIssue, reconcileSession, checkSession, handleSessionSignal } from './lib/state'
 const route=useRoute(), menu=ref(false), ready=ref(false), error=ref('')
-const nav=[{to:'/',label:'学习工作台',icon:'home'},{to:'/library',label:'我的题库',icon:'library'},{to:'/documents',label:'我的教材',icon:'book'},{to:'/evaluations',label:'评测台',icon:'check'},{to:'/discover',label:'发现题集',icon:'discover'},{to:'/history',label:'学习记录',icon:'history'}]
+const nav=[{to:'/',label:'学习工作台',icon:'home'},{to:'/library',label:'我的题库',icon:'library'},{to:'/documents',label:'我的教材',icon:'book'},{to:'/tutor',label:'教学教练',icon:'ai'},{to:'/evaluations',label:'评测台',icon:'check'},{to:'/discover',label:'发现题集',icon:'discover'},{to:'/history',label:'学习记录',icon:'history'}]
 watch(()=>route.fullPath,()=>menu.value=false)
 async function load(){error.value='';try{await initSession();ready.value=true}catch(e){error.value=message(e)}}
 const sidebar=ref<HTMLElement>(),workspace=ref<HTMLElement>()
@@ -31,7 +31,7 @@ onBeforeUnmount(()=>{releaseDrawer?.();window.removeEventListener('storage',hand
       <RouterLink to="/" class="brand"><span class="brand-mark"><Icon name="book"/></span><span>Exam<span class="brand-light">Hub</span></span></RouterLink>
       <button class="icon-button mobile-close" aria-label="关闭导航" @click="menu=false"><Icon name="close"/></button>
       <RouterLink to="/sets/new" class="button primary create-nav"><Icon name="plus"/>创建题集</RouterLink>
-      <nav aria-label="主导航"><RouterLink v-for="item in nav" :key="item.to" :to="item.to" class="nav-item" :class="{active:route.path===item.to||(item.to==='/documents'&&route.path.startsWith('/documents/'))}"><Icon :name="item.icon"/>{{item.label}}</RouterLink></nav>
+      <nav aria-label="主导航"><RouterLink v-for="item in nav" :key="item.to" :to="item.to" class="nav-item" :class="{active:route.path===item.to||(item.to==='/documents'&&route.path.startsWith('/documents/'))||(item.to==='/tutor'&&route.path.startsWith('/tutor/'))}"><Icon :name="item.icon"/>{{item.label}}</RouterLink></nav>
       <div class="sidebar-bottom"><RouterLink to="/settings" class="nav-item" active-class="active"><Icon name="settings"/>模型设置</RouterLink><div class="identity"><span class="avatar"><Icon name="user"/></span><div><strong>{{user?.name || '学习者'}}</strong><button v-if="!user?.email" class="text-button" @click="authOpen=true">访客模式 · 绑定账户</button><span v-else class="muted small">个人学习空间</span></div></div></div>
     </aside>
     <div ref="workspace" class="workspace"><header class="topbar"><div class="row"><button class="icon-button mobile-menu" aria-label="打开导航" :aria-expanded="menu" @click="menu=!menu"><Icon name="menu"/></button><span class="breadcrumb">个人空间 <span>/</span> <strong>{{route.meta.title}}</strong></span></div><RouterLink to="/discover" class="top-discover"><Icon name="search"/>寻找下一份知识</RouterLink><button class="avatar" aria-label="账户设置" @click="user?.email ? $router.push('/settings') : authOpen=true">{{user?.name?.slice(0,1)||'我'}}</button></header>
