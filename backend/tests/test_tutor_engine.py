@@ -236,6 +236,29 @@ class TutorEngine(unittest.TestCase):
         self.assertEqual(found[0]['questionId'],'q2')
         self.assertIn(marker,json.dumps(model_messages(s)))
 
+    def test_model_sees_explicit_history_and_empty_search_progress(self):
+        payload=lambda:json.loads(model_messages(self.state)[1]['content'])
+        self.assertFalse(payload()['historyRead'])
+        apply_action(self.state,action('read_history'))
+        self.assertTrue(payload()['historyRead'])
+        self.assertEqual(payload()['recentTools'][-1]['tool'],'read_history')
+        self.answered('TCP')
+        apply_action(self.state,action('search_materials',query='not-in-any-material-zzzz'))
+        self.assertEqual(payload()['lastSearch']['resultCount'],0)
+        self.assertEqual(payload()['lastSearch']['query'],'not-in-any-material-zzzz')
+        self.assertNotIn('SECRET_REFERENCE_TWO',json.dumps(payload()))
+
+    def test_lexical_question_metadata_finds_original_foreign_language_quote(self):
+        qs=questions();qs[0]['prompt']='TCP 可靠传输是否保证顺序';qs[0]['topic']='可靠传输'
+        s=new_state(qs,'Goal','agent',1)
+        self.ask(s);submit_answer(s,'TCP',s['turnId'])
+        found=apply_action(s,action('search_materials',query='可靠传输 顺序'))['evidence']
+        self.assertEqual(len(found),1)
+        self.assertEqual(found[0]['quote'],qs[0]['source'])
+        self.assertEqual(found[0]['citation'],qs[0]['citation'])
+        before=new_state(qs,'Goal','agent',1)
+        self.assertEqual(apply_action(before,action('search_materials',query='可靠传输 顺序'))['evidence'],[])
+
     def test_read_history_private_trace_and_detached_return(self):
         result=apply_action(self.state,action('read_history'))
         self.assertEqual(result['history'],dict(attempts=3,answered=5,correct=2))

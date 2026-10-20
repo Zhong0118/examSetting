@@ -73,17 +73,28 @@ class NoRedirect(HTTPRedirectHandler):
 
 
 def call_model(settings, messages):
-    payload = json.dumps({'model': settings['model'], 'messages': messages, 'temperature': 0.4, 'max_tokens': 6000, 'stream': False}, ensure_ascii=False).encode()
+    return call_model_response(settings, messages)['content']
+
+
+def call_model_response(settings, messages, *, max_tokens=6000, thinking=None):
+    data = {'model': settings['model'], 'messages': messages, 'temperature': 0.4, 'max_tokens': max_tokens, 'stream': False}
+    if thinking is not None:
+        data['thinking'] = {'type': thinking}
+    payload = json.dumps(data, ensure_ascii=False).encode()
     req = Request(settings['baseUrl'].rstrip('/') + '/chat/completions', data=payload, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + settings['apiKey']}, method='POST')
     try:
         with build_opener(NoRedirect()).open(req, timeout=60) as response:
             raw = response.read(1_000_001)
         if len(raw) > 1_000_000:
             raise ValueError('模型响应过大')
-        content = json.loads(raw)['choices'][0]['message']['content']
+        parsed = json.loads(raw)
+        content = parsed['choices'][0]['message']['content']
         if not isinstance(content, str):
             raise ValueError('模型没有返回文本')
-        return content
+        usage = parsed.get('usage')
+        keys = ('prompt_tokens', 'completion_tokens', 'total_tokens')
+        usage = {k: usage[k] for k in keys} if isinstance(usage, dict) and all(type(usage.get(k)) is int and usage[k] >= 0 for k in keys) else None
+        return dict(content=content, usage=usage, model=parsed.get('model') if isinstance(parsed.get('model'), str) else None)
     except HTTPError as exc:
         if exc.code in (401, 403):
             raise ValueError('模型鉴权失败，请检查密钥与模型权限') from None

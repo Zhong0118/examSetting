@@ -95,7 +95,7 @@ def register_tutor(app):
                             save(db,key,state);return
                         db.execute('INSERT INTO tutor_calls VALUES (?,?)',(key,now()))
                         state['modelCalls']+=1
-                        state['model']=settings['model'];state['provider']=settings['baseUrl'];state['policyVersion']='tutor-v3.1'
+                        state['model']=settings['model'];state['provider']=settings['baseUrl'];state['policyVersion']='tutor-v3.4'
                         save(db,key,state)
                 started=time.monotonic();action=None;failure=None
                 try:

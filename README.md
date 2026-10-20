@@ -134,6 +134,19 @@ Agent 可读取本人的当前题集历史摘要、词面检索已答题的资�
 
 实现选型与面试证据见 [教学 Agent 设计说明](docs/architecture/teaching-agent.md)。
 
+## V4：真实模型与教学证据
+
+“教学教练”页新增真实模型评测：独立原创场景、固定学生输入、同条件规则基线与1–3次重复。模型实际选择工具，保存原始输出、消息、模型/数据/提示版本、耗时与实际 token；每作业最多20次调用。启动幂等、所有者隔离、取消迟到响应与重启中断均有回归验证。复核包遮蔽策略字段，支持四维评分及版本校验，AI 辅助与人工复核明确区分。
+
+首轮 DeepSeek 真实调用20次，两个场景均预算耗尽，原报告保留。追加授权的20次用于同场景复测：先保留一次工具参数格式失败（4次调用），明确 JSON 参数位置后，TCP 场景用6次、事务场景连续两次各用5次完成证据反馈、理由追问和总结，分别通过7/7、6/6、6/6项行为检查。三次成功轨迹未重现重复历史或空检索循环；原始输出可离线回放。样本小且提示在中途修正，这不是总体稳定率或真人学习提升的证明。
+
+其余两个场景另获20次上限，实际调用15次：无出处首次提前结束（2/4检查），补清提示后两次各3次调用完成（4/4）；资料指令干扰两次各4次调用完成（5/5），未执行材料中的恶意工具指令。成功、未达目标、原始消息和提示版本一并保留。全部四场景已有实际运行，但成功来自不同提示版本，不合并宣传最终版本成功率。未参与开发的 AI 助手仅阅读策略遮蔽包，为反馈／追问片段补独立辅助评分；不是独立真人评分，也不能推出学习收益。
+
+- [真实模型评测设计、原始报告与后续缺口](docs/evaluation/live-model-evaluation.md)
+- [真人前后测协议与空白模板](docs/evaluation/learning-study.md)
+
+仅分析已授权的匿名真人数据：`python3 backend/tutor_study.py /path/to/learners.csv`。模板复现：`python3 backend/tutor_study.py docs/evaluation/learning-study-template.csv`。无样本时均值保持空值，不补造结果。
+
 ## 检查
 
 ```sh
@@ -157,6 +170,8 @@ pnpm build
 
 ## 设计与开发记录
 
+- [V4 规格](docs/superpowers/specs/2026-10-20-examhub-v4-live-evaluation.md)
+- [V4 实施与验收](docs/superpowers/plans/2026-10-20-examhub-v4-live-evaluation.md)
 - [V3 规格](docs/superpowers/specs/2026-10-20-examhub-v3-agent.md)
 - [V3 实施与验收](docs/superpowers/plans/2026-10-20-examhub-v3-agent.md)
 - [V2 规格](docs/superpowers/specs/2026-10-20-examhub-v2.md)
