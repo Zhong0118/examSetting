@@ -34,7 +34,9 @@ export function migrateGuestDrafts(from: {id: string; email: string | null}, to:
     if(localStorage.getItem(target)) conflicts++
     else localStorage.setItem(target,guestJob)
   }
-  const tutorCreate=localStorage.getItem(`examhub:tutor:create:${from.id}`)
-  if(tutorCreate){const target=`examhub:tutor:create:${to.id}`;if(localStorage.getItem(target))conflicts++;else localStorage.setItem(target,tutorCreate)}
+  for(const kind of ['tutor:create','tutor:live-start']){
+    const pending=localStorage.getItem(`examhub:${kind}:${from.id}`)
+    if(pending){const target=`examhub:${kind}:${to.id}`;if(localStorage.getItem(target))conflicts++;else localStorage.setItem(target,pending)}
+  }
   return conflicts
 }

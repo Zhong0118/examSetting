@@ -1,12 +1,12 @@
 import { readFile } from 'node:fs/promises'
 import ts from 'typescript'
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, shallowRef, computed, watch, nextTick } from 'vue'
 export async function script(path, bindings, names) {
   let source = await readFile(new URL(`../src/${path}`, import.meta.url), 'utf8')
   source = source.match(/<script setup lang="ts">([\s\S]*?)<\/script>/)?.[1] || source
   source = source.replace(/^import .*$/gm, '').replace(/^export /gm, '')
   source += `\nreturn {${names.map(n => `${n}:typeof ${n} === 'undefined' ? undefined : ${n}`).join(',')}}`
-  const defaults = {ref,computed,watch,nextTick,onMounted:()=>{},onBeforeUnmount:()=>{},onBeforeRouteLeave:()=>{}}
+  const defaults = {ref,shallowRef,computed,watch,nextTick,onMounted:()=>{},onBeforeUnmount:()=>{},onBeforeRouteLeave:()=>{}}
   const env = {...defaults,...bindings}
   const {outputText} = ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None}})
   return new Function(...Object.keys(env),outputText)(...Object.values(env))
@@ -27,6 +27,6 @@ export async function renderView(path, bindings, names, prepare=()=>{}) {
   const app=Vue.createSSRApp(component)
   app.component('RouterLink',{setup:(_,ctx)=>()=>Vue.h('a',null,ctx.slots.default?.())})
   app.component('Icon',{render:()=>Vue.h('svg')})
-  for(const name of ['AttemptResult','SetList','CitationCard','QualityPanel','DocumentRange','ComparisonReport','TutorBenchmark','TutorTranscript'])app.component(name,{render:()=>null})
+  for(const name of ['AttemptResult','SetList','CitationCard','QualityPanel','DocumentRange','ComparisonReport','TutorBenchmark','TutorLiveEvaluation','TutorTranscript'])app.component(name,{render:()=>null})
   return server.renderToString(app)
 }

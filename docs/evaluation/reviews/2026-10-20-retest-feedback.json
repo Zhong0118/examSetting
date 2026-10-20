@@ -1,0 +1,612 @@
+{
+  "kind": "tutor-quality-review-supplement",
+  "version": "1.0",
+  "createdAt": "2026-10-20T12:21:44.888277+00:00",
+  "method": "strategy-masked; one AI reviewer; not human or calibrated",
+  "scope": "Only feedback and followup events are scored; finish summaries are excluded by the current blind-package protocol.",
+  "sourceRuns": [
+    {
+      "path": "2026-10-20-retest-atomicity-01.json",
+      "sha256": "2a74475ed79a6ab81a37b8a686e0ea392cbe0c89b5d2d99d7d93c86e5507e0cd"
+    },
+    {
+      "path": "2026-10-20-retest-atomicity-02.json",
+      "sha256": "278945a9bffaca8626d9b7aad4126342b1d8fa70646864227c386a2c47267a1d"
+    },
+    {
+      "path": "2026-10-20-retest-tcp-01.json",
+      "sha256": "b2157a664740327740616d7ce00cbd08fe1c45180af1dc0c4f7da4bde7130d76"
+    },
+    {
+      "path": "2026-10-20-retest-tcp-02.json",
+      "sha256": "27a3790729233f022139c5549a7a9844a2ac4f3efcb9d12e396a0527087a1304"
+    }
+  ],
+  "package": {
+    "kind": "tutor-blind-review",
+    "version": "1.0",
+    "datasetHash": "eabf2d8b14557fa6e3ba966d079db27dadcfd892cd68f6d1d8524cbcabdfe011",
+    "rubric": {
+      "accuracy": "事实正确：0 错误或无反馈，1 部分正确，2 正确且无关键遗漏",
+      "grounding": "证据支持：0 伪造或矛盾，1 支持不充分，2 与证据一致且说明边界",
+      "diagnosis": "误区诊断：0 忽略或误诊，1 指出问题，2 结合回答解释误区或验证理由",
+      "actionability": "下一步：0 无建议，1 泛泛建议，2 给出具体可执行的复习或验证步骤"
+    },
+    "items": [
+      {
+        "blindId": "6f644a3d72e0424fb6b22c113c66fe55",
+        "caseTitle": "选对事务原子性后解释理由",
+        "goal": "问我一道事务题，即使选对也追问一次为什么。答题后检索原文并引用，再给具体反馈并结束。",
+        "questions": [
+          {
+            "id": "atomicity",
+            "type": "single",
+            "prompt": "转账中扣款和入账要么全部完成，要么全部撤销，体现了哪个性质？",
+            "options": [
+              "原子性",
+              "隔离性"
+            ],
+            "answer": "原子性",
+            "explanation": "原子性要求一个事务中的操作全做或全不做。隔离性讨论并发事务之间的影响。",
+            "source": "Atomicity means all operations in a transaction succeed together or none take effect. Isolation concerns concurrent transactions.",
+            "topic": "Atomicity transactions"
+          }
+        ],
+        "answers": [
+          {
+            "kind": "question",
+            "questionId": "atomicity",
+            "turnId": 1,
+            "prompt": "转账中扣款和入账要么全部完成，要么全部撤销，体现了哪个性质？",
+            "userAnswer": "原子性",
+            "correct": true,
+            "type": "single",
+            "options": [
+              "原子性",
+              "隔离性"
+            ],
+            "answer": "原子性",
+            "explanation": "原子性要求一个事务中的操作全做或全不做。隔离性讨论并发事务之间的影响。",
+            "source": "Atomicity means all operations in a transaction succeed together or none take effect. Isolation concerns concurrent transactions.",
+            "topic": "Atomicity transactions",
+            "citation": null
+          },
+          {
+            "kind": "followup",
+            "questionId": "atomicity",
+            "turnId": 2,
+            "prompt": "请结合转账场景说明：为什么“扣款和入账要么全部完成、要么全部撤销”体现的是原子性，而不是隔离性？",
+            "userAnswer": "因为不能只扣款不入账，两个步骤需要作为一个整体提交或撤销。",
+            "correct": null
+          }
+        ],
+        "events": [
+          {
+            "type": "followup",
+            "message": "请结合转账场景说明：为什么“扣款和入账要么全部完成、要么全部撤销”体现的是原子性，而不是隔离性？"
+          },
+          {
+            "type": "feedback",
+            "message": "你的理解正确：扣款与入账必须作为一个整体提交或撤销，不能只完成其中一步，这正是原子性“全做或全不做”的含义；隔离性关注的是并发事务之间的相互影响，与此处描述不符。\n引用仅表示原快照摘录，不证明反馈或答案事实正确。反馈仅供学习参考；简答与理由未自动判定掌握程度。",
+            "evidence": [
+              {
+                "evidenceId": "ev-bb8a9d13ba8756630348fe30",
+                "questionId": "atomicity",
+                "quote": "Atomicity means all operations in a transaction succeed together or none take effect. Isolation concerns concurrent transactions.",
+                "citation": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "blindId": "f385b4cdaae442b2bafa2a2a29981fb8",
+        "caseTitle": "选对事务原子性后解释理由",
+        "goal": "问我一道事务题，即使选对也追问一次为什么。答题后检索原文并引用，再给具体反馈并结束。",
+        "questions": [
+          {
+            "id": "atomicity",
+            "type": "single",
+            "prompt": "转账中扣款和入账要么全部完成，要么全部撤销，体现了哪个性质？",
+            "options": [
+              "原子性",
+              "隔离性"
+            ],
+            "answer": "原子性",
+            "explanation": "原子性要求一个事务中的操作全做或全不做。隔离性讨论并发事务之间的影响。",
+            "source": "Atomicity means all operations in a transaction succeed together or none take effect. Isolation concerns concurrent transactions.",
+            "topic": "Atomicity transactions"
+          }
+        ],
+        "answers": [
+          {
+            "kind": "question",
+            "questionId": "atomicity",
+            "turnId": 1,
+            "prompt": "转账中扣款和入账要么全部完成，要么全部撤销，体现了哪个性质？",
+            "userAnswer": "原子性",
+            "correct": true,
+            "type": "single",
+            "options": [
+              "原子性",
+              "隔离性"
+            ],
+            "answer": "原子性",
+            "explanation": "原子性要求一个事务中的操作全做或全不做。隔离性讨论并发事务之间的影响。",
+            "source": "Atomicity means all operations in a transaction succeed together or none take effect. Isolation concerns concurrent transactions.",
+            "topic": "Atomicity transactions",
+            "citation": null
+          },
+          {
+            "kind": "followup",
+            "questionId": "atomicity",
+            "turnId": 2,
+            "prompt": "请结合转账场景说明：为什么“扣款和入账要么全部完成、要么全部撤销”体现的是原子性，而不是隔离性？",
+            "userAnswer": "因为不能只扣款不入账，两个步骤需要作为一个整体提交或撤销。",
+            "correct": null
+          }
+        ],
+        "events": [
+          {
+            "type": "followup",
+            "message": "请结合转账场景说明：为什么“扣款和入账要么全部完成、要么全部撤销”体现的是原子性，而不是隔离性？"
+          },
+          {
+            "type": "feedback",
+            "message": "你的理解正确：扣款与入账必须作为一个不可分割的整体，要么都提交、要么都撤销，这正是原子性。隔离性关注的是并发事务之间如何相互影响，例如彼此是否能看到未提交的数据，而不是单个事务内部操作是否全做或全不做。\n引用仅表示原快照摘录，不证明反馈或答案事实正确。反馈仅供学习参考；简答与理由未自动判定掌握程度。",
+            "evidence": [
+              {
+                "evidenceId": "ev-bb8a9d13ba8756630348fe30",
+                "questionId": "atomicity",
+                "quote": "Atomicity means all operations in a transaction succeed together or none take effect. Isolation concerns concurrent transactions.",
+                "citation": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "blindId": "40e260c484aa4d7b831d468c2815ccee",
+        "caseTitle": "把可靠传输误认为 UDP 的特性",
+        "goal": "请先查我的学习历史，问我一道 TCP 题。我答完后，请检索该题资料，引用原文解释误区，追问一次理由，最后总结。不要代替我作答。",
+        "questions": [
+          {
+            "id": "tcp",
+            "type": "single",
+            "prompt": "在 TCP 与 UDP 中，哪一个协议本身提供按序可靠的字节流传输？",
+            "options": [
+              "TCP",
+              "UDP"
+            ],
+            "answer": "TCP",
+            "explanation": "TCP 提供可靠有序字节流；UDP 不保证交付和顺序。不能把低延迟等同于可靠性。",
+            "source": "TCP provides a reliable, in-order byte stream. UDP does not guarantee delivery or ordering.",
+            "topic": "TCP reliable delivery"
+          }
+        ],
+        "answers": [
+          {
+            "kind": "question",
+            "questionId": "tcp",
+            "turnId": 1,
+            "prompt": "在 TCP 与 UDP 中，哪一个协议本身提供按序可靠的字节流传输？",
+            "userAnswer": "UDP",
+            "correct": false,
+            "type": "single",
+            "options": [
+              "TCP",
+              "UDP"
+            ],
+            "answer": "TCP",
+            "explanation": "TCP 提供可靠有序字节流；UDP 不保证交付和顺序。不能把低延迟等同于可靠性。",
+            "source": "TCP provides a reliable, in-order byte stream. UDP does not guarantee delivery or ordering.",
+            "topic": "TCP reliable delivery",
+            "citation": null
+          },
+          {
+            "kind": "followup",
+            "questionId": "tcp",
+            "turnId": 2,
+            "prompt": "你选择了 UDP。请结合“可靠、按序的字节流”这几个关键词，说明你当时为什么会认为 UDP 符合这一描述？",
+            "userAnswer": "我以为 UDP 更快，所以也更可靠。",
+            "correct": null
+          }
+        ],
+        "events": [
+          {
+            "type": "feedback",
+            "message": "你把低延迟和可靠性混在一起了：TCP 本身提供按序、可靠的字节流；UDP 不保证交付，也不保证顺序。\n引用仅表示原快照摘录，不证明反馈或答案事实正确。反馈仅供学习参考；简答与理由未自动判定掌握程度。",
+            "evidence": [
+              {
+                "evidenceId": "ev-22cadfce49e1cd6a8953b19e",
+                "questionId": "tcp",
+                "quote": "TCP provides a reliable, in-order byte stream. UDP does not guarantee delivery or ordering.",
+                "citation": null
+              }
+            ]
+          },
+          {
+            "type": "followup",
+            "message": "你选择了 UDP。请结合“可靠、按序的字节流”这几个关键词，说明你当时为什么会认为 UDP 符合这一描述？"
+          }
+        ]
+      },
+      {
+        "blindId": "0824ef31796d4c2a9eff07243c5a3b66",
+        "caseTitle": "选对事务原子性后解释理由",
+        "goal": "问我一道事务题，即使选对也追问一次为什么。答题后检索原文并引用，再给具体反馈并结束。",
+        "questions": [
+          {
+            "id": "atomicity",
+            "type": "single",
+            "prompt": "转账中扣款和入账要么全部完成，要么全部撤销，体现了哪个性质？",
+            "options": [
+              "原子性",
+              "隔离性"
+            ],
+            "answer": "原子性",
+            "explanation": "原子性要求一个事务中的操作全做或全不做。隔离性讨论并发事务之间的影响。",
+            "source": "Atomicity means all operations in a transaction succeed together or none take effect. Isolation concerns concurrent transactions.",
+            "topic": "Atomicity transactions"
+          }
+        ],
+        "answers": [
+          {
+            "kind": "question",
+            "questionId": "atomicity",
+            "turnId": 1,
+            "prompt": "转账中扣款和入账要么全部完成，要么全部撤销，体现了哪个性质？",
+            "userAnswer": "原子性",
+            "correct": true,
+            "type": "single",
+            "options": [
+              "原子性",
+              "隔离性"
+            ],
+            "answer": "原子性",
+            "explanation": "原子性要求一个事务中的操作全做或全不做。隔离性讨论并发事务之间的影响。",
+            "source": "Atomicity means all operations in a transaction succeed together or none take effect. Isolation concerns concurrent transactions.",
+            "topic": "Atomicity transactions",
+            "citation": null
+          }
+        ],
+        "events": [
+          {
+            "type": "feedback",
+            "message": "原子性要求一个事务中的操作全做或全不做。隔离性讨论并发事务之间的影响。\n未提供检索证据，未经教材核验。反馈仅供学习参考；简答与理由未自动判定掌握程度。",
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "blindId": "e39986ea86df4bdcaab5db76b5080052",
+        "caseTitle": "选对事务原子性后解释理由",
+        "goal": "问我一道事务题，即使选对也追问一次为什么。答题后检索原文并引用，再给具体反馈并结束。",
+        "questions": [
+          {
+            "id": "atomicity",
+            "type": "single",
+            "prompt": "转账中扣款和入账要么全部完成，要么全部撤销，体现了哪个性质？",
+            "options": [
+              "原子性",
+              "隔离性"
+            ],
+            "answer": "原子性",
+            "explanation": "原子性要求一个事务中的操作全做或全不做。隔离性讨论并发事务之间的影响。",
+            "source": "Atomicity means all operations in a transaction succeed together or none take effect. Isolation concerns concurrent transactions.",
+            "topic": "Atomicity transactions"
+          }
+        ],
+        "answers": [
+          {
+            "kind": "question",
+            "questionId": "atomicity",
+            "turnId": 1,
+            "prompt": "转账中扣款和入账要么全部完成，要么全部撤销，体现了哪个性质？",
+            "userAnswer": "原子性",
+            "correct": true,
+            "type": "single",
+            "options": [
+              "原子性",
+              "隔离性"
+            ],
+            "answer": "原子性",
+            "explanation": "原子性要求一个事务中的操作全做或全不做。隔离性讨论并发事务之间的影响。",
+            "source": "Atomicity means all operations in a transaction succeed together or none take effect. Isolation concerns concurrent transactions.",
+            "topic": "Atomicity transactions",
+            "citation": null
+          }
+        ],
+        "events": [
+          {
+            "type": "feedback",
+            "message": "原子性要求一个事务中的操作全做或全不做。隔离性讨论并发事务之间的影响。\n未提供检索证据，未经教材核验。反馈仅供学习参考；简答与理由未自动判定掌握程度。",
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "blindId": "8ad2fd1a0a1e4ff694f1494e82a84e10",
+        "caseTitle": "把可靠传输误认为 UDP 的特性",
+        "goal": "请先查我的学习历史，问我一道 TCP 题。我答完后，请检索该题资料，引用原文解释误区，追问一次理由，最后总结。不要代替我作答。",
+        "questions": [
+          {
+            "id": "tcp",
+            "type": "single",
+            "prompt": "在 TCP 与 UDP 中，哪一个协议本身提供按序可靠的字节流传输？",
+            "options": [
+              "TCP",
+              "UDP"
+            ],
+            "answer": "TCP",
+            "explanation": "TCP 提供可靠有序字节流；UDP 不保证交付和顺序。不能把低延迟等同于可靠性。",
+            "source": "TCP provides a reliable, in-order byte stream. UDP does not guarantee delivery or ordering.",
+            "topic": "TCP reliable delivery"
+          }
+        ],
+        "answers": [
+          {
+            "kind": "question",
+            "questionId": "tcp",
+            "turnId": 1,
+            "prompt": "在 TCP 与 UDP 中，哪一个协议本身提供按序可靠的字节流传输？",
+            "userAnswer": "UDP",
+            "correct": false,
+            "type": "single",
+            "options": [
+              "TCP",
+              "UDP"
+            ],
+            "answer": "TCP",
+            "explanation": "TCP 提供可靠有序字节流；UDP 不保证交付和顺序。不能把低延迟等同于可靠性。",
+            "source": "TCP provides a reliable, in-order byte stream. UDP does not guarantee delivery or ordering.",
+            "topic": "TCP reliable delivery",
+            "citation": null
+          }
+        ],
+        "events": [
+          {
+            "type": "feedback",
+            "message": "TCP 提供可靠有序字节流；UDP 不保证交付和顺序。不能把低延迟等同于可靠性。\n未提供检索证据，未经教材核验。反馈仅供学习参考；简答与理由未自动判定掌握程度。",
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "blindId": "2598409c80f64a8188bd100a0dd95186",
+        "caseTitle": "把可靠传输误认为 UDP 的特性",
+        "goal": "请先查我的学习历史，问我一道 TCP 题。我答完后，请检索该题资料，引用原文解释误区，追问一次理由，最后总结。不要代替我作答。",
+        "questions": [
+          {
+            "id": "tcp",
+            "type": "single",
+            "prompt": "在 TCP 与 UDP 中，哪一个协议本身提供按序可靠的字节流传输？",
+            "options": [
+              "TCP",
+              "UDP"
+            ],
+            "answer": "TCP",
+            "explanation": "TCP 提供可靠有序字节流；UDP 不保证交付和顺序。不能把低延迟等同于可靠性。",
+            "source": "TCP provides a reliable, in-order byte stream. UDP does not guarantee delivery or ordering.",
+            "topic": "TCP reliable delivery"
+          }
+        ],
+        "answers": [
+          {
+            "kind": "question",
+            "questionId": "tcp",
+            "turnId": 1,
+            "prompt": "在 TCP 与 UDP 中，哪一个协议本身提供按序可靠的字节流传输？",
+            "userAnswer": "UDP",
+            "correct": false,
+            "type": "single",
+            "options": [
+              "TCP",
+              "UDP"
+            ],
+            "answer": "TCP",
+            "explanation": "TCP 提供可靠有序字节流；UDP 不保证交付和顺序。不能把低延迟等同于可靠性。",
+            "source": "TCP provides a reliable, in-order byte stream. UDP does not guarantee delivery or ordering.",
+            "topic": "TCP reliable delivery",
+            "citation": null
+          }
+        ],
+        "events": []
+      },
+      {
+        "blindId": "a479e85a5b3f415aadeaec84172f0d8a",
+        "caseTitle": "把可靠传输误认为 UDP 的特性",
+        "goal": "请先查我的学习历史，问我一道 TCP 题。我答完后，请检索该题资料，引用原文解释误区，追问一次理由，最后总结。不要代替我作答。",
+        "questions": [
+          {
+            "id": "tcp",
+            "type": "single",
+            "prompt": "在 TCP 与 UDP 中，哪一个协议本身提供按序可靠的字节流传输？",
+            "options": [
+              "TCP",
+              "UDP"
+            ],
+            "answer": "TCP",
+            "explanation": "TCP 提供可靠有序字节流；UDP 不保证交付和顺序。不能把低延迟等同于可靠性。",
+            "source": "TCP provides a reliable, in-order byte stream. UDP does not guarantee delivery or ordering.",
+            "topic": "TCP reliable delivery"
+          }
+        ],
+        "answers": [
+          {
+            "kind": "question",
+            "questionId": "tcp",
+            "turnId": 1,
+            "prompt": "在 TCP 与 UDP 中，哪一个协议本身提供按序可靠的字节流传输？",
+            "userAnswer": "UDP",
+            "correct": false,
+            "type": "single",
+            "options": [
+              "TCP",
+              "UDP"
+            ],
+            "answer": "TCP",
+            "explanation": "TCP 提供可靠有序字节流；UDP 不保证交付和顺序。不能把低延迟等同于可靠性。",
+            "source": "TCP provides a reliable, in-order byte stream. UDP does not guarantee delivery or ordering.",
+            "topic": "TCP reliable delivery",
+            "citation": null
+          }
+        ],
+        "events": [
+          {
+            "type": "feedback",
+            "message": "TCP 提供可靠有序字节流；UDP 不保证交付和顺序。不能把低延迟等同于可靠性。\n未提供检索证据，未经教材核验。反馈仅供学习参考；简答与理由未自动判定掌握程度。",
+            "evidence": []
+          }
+        ]
+      }
+    ],
+    "limitations": [
+      "移除条件/模型/轨迹字段且随机排列；文风仍可能暴露策略，复核包不能单独证明正式盲评。"
+    ]
+  },
+  "items": [
+    {
+      "run": "2026-10-20-retest-atomicity-01.json",
+      "trialId": "d15c883777ca44c9a8e3c9545a0ca7e5",
+      "blindId": "0824ef31796d4c2a9eff07243c5a3b66",
+      "review": {
+        "reviewer": "独立AI复核A",
+        "reviewerType": "ai-assisted",
+        "scores": {
+          "accuracy": 2,
+          "grounding": 1,
+          "diagnosis": 0,
+          "actionability": 0
+        },
+        "notes": "accuracy=2：实际反馈给出了原子性全做或全不做、隔离性涉及并发影响的正确区别，与包内source一致。grounding=1：内容可由包内原文支持，也坦承未提供检索证据，但evidence为空，没有交付原文摘录或可追溯引用，故证据呈现不充分；不能因缺少检索就称其事实错误或伪造。diagnosis=0：仅复述定义，没有结合学习者选择“原子性”说明其具体推理，也没有理由追问，无法验证其为何选对。actionability=0：没有后续复习或验证建议，免责声明不属于学习步骤。该记录不能证明学习者理解了原子性与隔离性的区别。",
+        "updatedAt": "2026-10-20T12:20:51.586702+00:00"
+      }
+    },
+    {
+      "run": "2026-10-20-retest-atomicity-01.json",
+      "trialId": "f08eb8ce63104b0ebe48482da657b86d",
+      "blindId": "f385b4cdaae442b2bafa2a2a29981fb8",
+      "review": {
+        "reviewer": "独立AI复核A",
+        "reviewerType": "ai-assisted",
+        "scores": {
+          "accuracy": 2,
+          "grounding": 1,
+          "diagnosis": 2,
+          "actionability": 0
+        },
+        "notes": "accuracy=2：原子性对应单个事务内部操作全做或全不做，隔离性涉及并发事务及其可见性，事实表述正确，无关键遗漏。grounding=1：英文摘录与source一致，支持核心区别，但“彼此是否能看到未提交的数据”这一具体例子没有包内原文直接支持；通用的摘录免责声明未单独说明该例的证据边界。citation为null，无法从包内独立核验外部出处。diagnosis=2：针对学习者“两个步骤作为整体提交或撤销”的理由作出解释，并用并发事务的区别验证其选择理由。actionability=0：最终反馈没有提出复习任务、迁移问题或下一次验证步骤；此前的追问已经完成。不能据此推断学习者已经稳定掌握。",
+        "updatedAt": "2026-10-20T12:20:51.556699+00:00"
+      }
+    },
+    {
+      "run": "2026-10-20-retest-atomicity-02.json",
+      "trialId": "dcd3d7679cdf478b85e58a008ada99d5",
+      "blindId": "e39986ea86df4bdcaab5db76b5080052",
+      "review": {
+        "reviewer": "独立AI复核A",
+        "reviewerType": "ai-assisted",
+        "scores": {
+          "accuracy": 2,
+          "grounding": 1,
+          "diagnosis": 0,
+          "actionability": 0
+        },
+        "notes": "accuracy=2：实际反馈对原子性与隔离性的定义正确，与包内source一致，无关键事实遗漏。grounding=1：包内原文支持所述定义，反馈也说明未经教材核验，但evidence为空，未提供摘录或可追溯引用，支持呈现不充分。diagnosis=0：学习者仅提交了选项，反馈没有结合回答验证理由，也没有解释其选择背后的理解；正确的通用定义不能替代对学习者推理的诊断。actionability=0：没有具体下一步，也没有泛泛的复习建议。缺失的理由与验证过程不能由参考答案补足，不能推断其已掌握。",
+        "updatedAt": "2026-10-20T12:20:51.597152+00:00"
+      }
+    },
+    {
+      "run": "2026-10-20-retest-atomicity-02.json",
+      "trialId": "08027b42d4d44916831935060d267373",
+      "blindId": "6f644a3d72e0424fb6b22c113c66fe55",
+      "review": {
+        "reviewer": "独立AI复核A",
+        "reviewerType": "ai-assisted",
+        "scores": {
+          "accuracy": 2,
+          "grounding": 2,
+          "diagnosis": 2,
+          "actionability": 0
+        },
+        "notes": "accuracy=2：将扣款和入账作为整体提交或撤销归为原子性，并区分隔离性关注并发事务，符合包内原文，无关键事实遗漏。grounding=2：所附英文摘录与source一致，直接支持两种性质的区别；反馈说明摘录与掌握程度判断的边界。citation为null，只能核对包内快照，不能独立追溯外部出处。diagnosis=2：结合学习者“不能只扣款不入账”“整体提交或撤销”的理由解释为何正确，没有凭空认定其存在误区。actionability=0：最终反馈未给出后续复习或验证步骤；此前已完成的理由追问不等于反馈之后的新一步。包内不能证明长期掌握或真实学习效果。",
+        "updatedAt": "2026-10-20T12:20:51.544780+00:00"
+      }
+    },
+    {
+      "run": "2026-10-20-retest-tcp-01.json",
+      "trialId": "b952383f736a431aa16732e5297dd1cf",
+      "blindId": "8ad2fd1a0a1e4ff694f1494e82a84e10",
+      "review": {
+        "reviewer": "独立AI复核A",
+        "reviewerType": "ai-assisted",
+        "scores": {
+          "accuracy": 2,
+          "grounding": 1,
+          "diagnosis": 1,
+          "actionability": 0
+        },
+        "notes": "accuracy=2：实际反馈正确说明TCP提供可靠有序字节流，UDP不保证交付和顺序，且低延迟不等同于可靠性，与包内材料一致。grounding=1：核心协议区别有包内source支持，但evidence为空，没有附原文摘录或引用；反馈承认未检索核验，未伪造证据。diagnosis=1：指出了应区分低延迟与可靠性，也纠正了选择UDP的问题；但学习者只提交了选项，没有给出“因为更快”的理由，反馈未追问验证，不能确定其实际误区就是速度与可靠性混淆。actionability=0：没有提出复习、对照或再次作答等后续步骤。不能把预设的误区提示当作已经验证的学习者诊断或学习成效。",
+        "updatedAt": "2026-10-20T12:20:51.607333+00:00"
+      }
+    },
+    {
+      "run": "2026-10-20-retest-tcp-01.json",
+      "trialId": "1c9bb44a8d754d81894a2d9228508772",
+      "blindId": "2598409c80f64a8188bd100a0dd95186",
+      "review": {
+        "reviewer": "独立AI复核A",
+        "reviewerType": "ai-assisted",
+        "scores": {
+          "accuracy": 0,
+          "grounding": 0,
+          "diagnosis": 0,
+          "actionability": 0
+        },
+        "notes": "accuracy=0：events为空，未形成任何可供评价的反馈；题目中的正确答案、explanation及correct=false属于题目或答题记录，不是已交付反馈，不能据此给分。grounding=0：没有反馈及其引用或证据链，虽然题目含source，也不能替代实际反馈的证据支持；此处0表示缺失，不指控伪造。diagnosis=0：没有对选择UDP作出纠正、解释或理由核验。actionability=0：没有任何复习建议或验证步骤。该缺失反馈条目保留评分，不能推断反馈曾在包外产生，也不能编造学习结果。",
+        "updatedAt": "2026-10-20T12:20:51.617206+00:00"
+      }
+    },
+    {
+      "run": "2026-10-20-retest-tcp-02.json",
+      "trialId": "c197b3f0b3574c59821b80f68c434897",
+      "blindId": "a479e85a5b3f415aadeaec84172f0d8a",
+      "review": {
+        "reviewer": "独立AI复核A",
+        "reviewerType": "ai-assisted",
+        "scores": {
+          "accuracy": 2,
+          "grounding": 1,
+          "diagnosis": 1,
+          "actionability": 0
+        },
+        "notes": "accuracy=2：实际反馈正确区分TCP的可靠有序字节流保证与UDP不保证交付、顺序，并正确提醒低延迟不等于可靠性。grounding=1：包内source支持协议区别，但反馈的evidence为空，未提供原文摘录或可追溯引用；虽明确未经教材核验，仍属于支持呈现不充分。diagnosis=1：指出了选项涉及的协议保证区别和一个可能的混淆点；包内没有学习者的选择理由，也没有追问，因此不能确认其错误确由追求速度导致，尚未形成结合理由的诊断。actionability=0：反馈没有要求完成任何复习或验证任务。不能从通用纠错内容推出学习者误区已被验证、纠正或学习效果已经改善。",
+        "updatedAt": "2026-10-20T12:20:51.625259+00:00"
+      }
+    },
+    {
+      "run": "2026-10-20-retest-tcp-02.json",
+      "trialId": "e77a3fa5b7c3486b86c400e3ad79f9fd",
+      "blindId": "40e260c484aa4d7b831d468c2815ccee",
+      "review": {
+        "reviewer": "独立AI复核A",
+        "reviewerType": "ai-assisted",
+        "scores": {
+          "accuracy": 2,
+          "grounding": 2,
+          "diagnosis": 2,
+          "actionability": 2
+        },
+        "notes": "accuracy=2：正确指出TCP提供按序可靠字节流，UDP不保证交付和顺序，低延迟不能推出可靠性；与包内题目及原文一致。grounding=2：所附英文摘录逐项支持协议保证的区别，并明确摘录不等于事实或掌握程度的独立证明；citation为null，核验限于包内快照。diagnosis=2：指出把速度或低延迟当作可靠性的混淆，并以交付、顺序保证解释区别，与包内后续理由“UDP更快，所以也更可靠”吻合。时序局限是该诊断先于理由回答出现，未见理由回答后的再次反馈或总结。actionability=2：反馈后的追问明确要求对照“可靠、按序的字节流”解释选择UDP的依据，构成具体可执行的理由核验步骤；这里只认定该步骤存在，不认定误区已被纠正或学习效果已经产生。",
+        "updatedAt": "2026-10-20T12:20:51.575938+00:00"
+      }
+    }
+  ],
+  "limitations": [
+    "Fresh AI reviewer, not an independent human expert or calibrated judge.",
+    "Strategy/model fields removed; wording may still reveal the source.",
+    "Rubric scores cover presented feedback/followup fragments, not omitted final summaries or learner gains.",
+    "Raw execution snapshots are unchanged; these reviews were added later through the versioned API."
+  ]
+}

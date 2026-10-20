@@ -145,6 +145,7 @@ def create_app(config=None):
                 db.execute('UPDATE documents SET owner_id=? WHERE owner_id=?', (row['id'], departing_id))
                 db.execute('UPDATE evaluations SET user_id=? WHERE user_id=?', (row['id'], departing_id))
                 db.execute('UPDATE tutor_sessions SET user_id=? WHERE user_id=?', (row['id'], departing_id))
+                db.execute('UPDATE tutor_live_evaluations SET user_id=? WHERE user_id=?', (row['id'], departing_id))
                 db.execute('INSERT OR IGNORE INTO bookmarks(user_id,set_id) SELECT ?,set_id FROM bookmarks WHERE user_id=?',
                            (row['id'], departing_id))
                 db.execute('DELETE FROM bookmarks WHERE user_id=?', (departing_id,))
@@ -279,6 +280,8 @@ def create_app(config=None):
     register_evaluations(app)
     from tutor import register_tutor
     register_tutor(app)
+    from tutor_live_api import register_tutor_live
+    register_tutor_live(app)
     return app
 
 
