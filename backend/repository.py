@@ -28,7 +28,7 @@ def version_value(data):
     return value
 
 
-def validate_set(data):
+def validate_set(data, existing=None):
     visibility = data.get('visibility')
     if visibility not in ('public', 'unlisted', 'private'):
         abort(400, description='visibility 格式不正确')
@@ -55,6 +55,9 @@ def validate_set(data):
         if item['type'] == 'short' and options:
             abort(400, description='简答题选项必须为空')
         output.append(dict(q, id=qid, type=item['type'], options=options))
+        if item.get('citation') is not None:
+            from documents import canonical_citation
+            output[-1]['citation'] = canonical_citation(item['citation'], q['source'], g.user['id'], existing=existing or [])
     return dict(result, questions=output)
 
 
@@ -73,8 +76,11 @@ def summary(row):
                 bookmarked=bookmarked, updatedAt=row['updated_at'], sourceSetId=row['source_set_id'])
 
 
-def questions_without_answers(row):
-    return [{k: v for k, v in q.items() if k not in ('answer', 'explanation')} for q in json.loads(row['questions'])]
+def questions_without_answers(row, hide_evidence=False):
+    hidden = {'answer', 'explanation'}
+    if hide_evidence:
+        hidden.update(('source', 'citation'))
+    return [{k: v for k, v in q.items() if k not in hidden} for q in json.loads(row['questions'])]
 
 
 def detail(row):

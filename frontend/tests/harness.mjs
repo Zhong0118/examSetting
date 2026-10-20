@@ -21,12 +21,12 @@ export async function renderView(path, bindings, names, prepare=()=>{}) {
   const {code,errors}=compileTemplate({source:parse(source).descriptor.template.content,filename:path,id:'regression',ssr:true,ssrCssVars:[]})
   if(errors.length)throw errors[0]
   const executable=code.replace(/import \{([^}]+)\} from "([^"]+)"/g,(_,names,module)=>`const {${names.replace(/\bas\b/g,':')}} = ${module==='vue'?'Vue':'server'}`).replace('export function','function')
-  const ssrRender=new Function('Vue','server',`${executable};return ssrRender`)(Vue,server)
+  const ssrRender=new Function('Vue','server',`${ts.transpileModule(executable,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None}}).outputText};return ssrRender`)(Vue,server)
   const vm=await script(path,bindings,names);prepare(vm)
   const component={setup:()=>({...bindings,...vm}),ssrRender}
   const app=Vue.createSSRApp(component)
   app.component('RouterLink',{setup:(_,ctx)=>()=>Vue.h('a',null,ctx.slots.default?.())})
   app.component('Icon',{render:()=>Vue.h('svg')})
-  for(const name of ['AttemptResult','SetList'])app.component(name,{render:()=>null})
+  for(const name of ['AttemptResult','SetList','CitationCard','QualityPanel','DocumentRange','ComparisonReport'])app.component(name,{render:()=>null})
   return server.renderToString(app)
 }

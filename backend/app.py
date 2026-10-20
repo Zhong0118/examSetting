@@ -59,7 +59,7 @@ def credentials(data):
 def create_app(config=None):
     app = Flask(__name__)
     app.config.from_mapping(DATABASE=os.environ.get('DATABASE', str(Path(__file__).parent / 'instance' / 'examhub.sqlite3')),
-                            MAX_CONTENT_LENGTH=2 * 1024 * 1024, SESSION_COOKIE_NAME='examhub_session',
+                            MAX_CONTENT_LENGTH=21 * 1024 * 1024, SESSION_COOKIE_NAME='examhub_session',
                             SESSION_COOKIE_SECURE=os.environ.get('SESSION_COOKIE_SECURE', '').lower() == 'true')
     if config:
         app.config.update(config)
@@ -142,6 +142,8 @@ def create_app(config=None):
                 db.execute('UPDATE sets SET owner_id=? WHERE owner_id=?', (row['id'], departing_id))
                 db.execute('UPDATE attempts SET user_id=? WHERE user_id=?', (row['id'], departing_id))
                 db.execute('UPDATE ai_jobs SET user_id=? WHERE user_id=?', (row['id'], departing_id))
+                db.execute('UPDATE documents SET owner_id=? WHERE owner_id=?', (row['id'], departing_id))
+                db.execute('UPDATE evaluations SET user_id=? WHERE user_id=?', (row['id'], departing_id))
                 db.execute('INSERT OR IGNORE INTO bookmarks(user_id,set_id) SELECT ?,set_id FROM bookmarks WHERE user_id=?',
                            (row['id'], departing_id))
                 db.execute('DELETE FROM bookmarks WHERE user_id=?', (departing_id,))
@@ -189,10 +191,10 @@ def create_app(config=None):
 
     @app.put('/api/sets/<set_id>')
     def update_set(set_id):
-        accessible(set_id, owner=True)
+        row = accessible(set_id, owner=True)
         payload = body()
         version = version_value(payload)
-        data = validate_set(payload)
+        data = validate_set(payload, existing=[q['citation'] for q in json.loads(row['questions']) if q.get('citation')])
         db = get_db()
         with db:
             changed = db.execute('UPDATE sets SET title=?,description=?,topic=?,visibility=?,questions=?,updated_at=?,version=version+1 WHERE id=? AND owner_id=? AND version=?',
@@ -236,7 +238,7 @@ def create_app(config=None):
     @app.get('/api/sets/<set_id>/practice')
     def practice(set_id):
         row = accessible(set_id)
-        return jsonify(set=summary(row), questions=questions_without_answers(row))
+        return jsonify(set=summary(row), questions=questions_without_answers(row, hide_evidence=True))
 
     @app.post('/api/sets/<set_id>/attempts')
     def submit(set_id):
@@ -268,13 +270,12 @@ def create_app(config=None):
         rows = get_db().execute('SELECT snapshot FROM attempts WHERE user_id=? ORDER BY rowid DESC', (g.user['id'],)).fetchall()
         return jsonify(attempts=[json.loads(row['snapshot']) for row in rows])
 
-    try:
-        from ai import register_ai
-    except ModuleNotFoundError as error:
-        if error.name != 'ai':
-            raise
-    else:
-        register_ai(app)
+    from documents import register_documents
+    from ai import register_ai
+    from evaluations import register_evaluations
+    register_documents(app)
+    register_ai(app)
+    register_evaluations(app)
     return app
 
 
