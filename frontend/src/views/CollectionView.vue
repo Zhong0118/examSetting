@@ -17,9 +17,40 @@ let generation=0
 async function load(){const current=++generation;loading.value=true;error.value='';try{const [collection,history]=await Promise.all([home.value?Promise.all([api.sets('mine'),api.sets('saved'),api.sets('discover')]).then(groups=>({sets:[...new Map(groups.flatMap(g=>g.sets).map(s=>[s.id,s])).values()]})):api.sets(library.value?scope.value:'discover'),home.value?api.attempts():Promise.resolve({attempts:[]})]);if(current!==generation)return;sets.value=collection.sets;attempts.value=history.attempts}catch(e){if(current===generation)error.value=message(e)}finally{if(current===generation)loading.value=false}}
 watch(scope,load);onMounted(load)
 </script>
-<template><div class="page-container"><header class="page-heading"><div><p class="heading-note">{{home?'每一点理解 都让你更进一步':library?'属于你的知识积累':'从一个好问题开始'}}</p><h1>{{home?`${user?.name?.includes('访客')?'你好':user?.name || '你好'}，开始学习吧`:library?'我的题库':'发现题集'}}</h1><p>{{home?'整理知识，专注练习，让每一次学习都有所收获':library?'把想学的知识整理成题集，按自己的节奏练习':'探索公开题集，也可以复制一份，加入自己的思考'}}</p></div><RouterLink v-if="!home" to="/sets/new" class="button primary"><Icon name="plus"/>创建题集</RouterLink></header>
-<div class="workbench-grid"><div class="main-column">
-<section v-if="home" class="study-feature"><div class="feature-content"><span class="feature-label"><span class="status-dot"/>今日的学习，从这里开始</span><h2>{{featured?.title||'把零散知识\n变成扎实理解'}}</h2><p>{{featured ? `${featured.topic || '综合学习'} · ${featured.questionCount} 道题，留一点时间给专注` : '创建第一份题集，或者去发现页找到感兴趣的内容'}}</p><RouterLink :to="featured?`/practice/${featured.id}`:'/sets/new'" class="button white">{{resumed?'继续练习':featured?'开始练习':'创建第一份题集'}}<Icon name="right"/></RouterLink></div><div class="feature-art" aria-hidden="true"><div class="paper paper-back"/><div class="paper paper-front"><span class="paper-icon"><Icon name="book"/></span><i/><i/><i/><span class="paper-check"><Icon name="check"/></span></div><span class="orbit orbit-one"/><span class="orbit orbit-two"/></div></section>
-<div v-if="home" class="section-head collection-heading"><h2>探索知识领域</h2><RouterLink to="/discover" class="text-button">全部题集<Icon name="right"/></RouterLink></div><div v-if="home && topics.length" class="topic-collections"><button v-for="(item,i) in topics.slice(0,3)" :key="item" :class="{selected:topic===item}" @click="topic=topic===item?'':item"><Icon :name="['library','document','book'][i]"/><strong>{{item}}</strong><span>{{sets.filter(s=>s.topic===item).length}} 份题集</span><Icon name="right"/></button></div>
-<section class="library-section"><div class="section-head"><h2>{{home?'值得开始的题集':library?'题集列表':'公开题集'}}</h2><span class="muted small">{{filtered.length}} 份题集</span></div><div class="collection-toolbar"><div v-if="library" class="tabs" aria-label="题库范围"><button :class="{active:scope==='mine'}" @click="scope='mine';topic=''">我创建的</button><button :class="{active:scope==='saved'}" @click="scope='saved';topic=''">我收藏的</button></div><label class="search-field"><Icon name="search"/><input v-model="q" aria-label="搜索题集" placeholder="搜索题集或知识点"/></label><select v-model="topic" aria-label="筛选主题"><option value="">全部主题</option><option v-for="item in topics" :key="item">{{item}}</option></select></div><div v-if="loading" class="loading" role="status">正在获取题集…</div><div v-else-if="error" class="empty-state"><Icon name="warning"/><h3>题集加载失败</h3><p>{{error}}</p><button class="button" @click="load">重试</button></div><SetList v-else-if="filtered.length" :sets="filtered"/><div v-else class="empty-state"><Icon name="library"/><h3>{{q||topic?'没有找到匹配题集':'知识库从第一份题集开始'}}</h3><p>{{q||topic?'换个关键词，或者查看全部主题':'手工整理知识，也可以从公开题集开始学习'}}</p><button v-if="q||topic" class="button" @click="q='';topic=''">清除筛选</button><RouterLink v-else :to="library && scope==='saved'?'/discover':'/sets/new'" class="button primary">{{library&&scope==='saved'?'发现题集':'创建题集'}}</RouterLink></div></section>
-</div><aside class="context-rail"><section class="rail-intro"><span class="rail-icon"><Icon name="book"/></span><h2>学得少一点<br/>理解深一点</h2><p>先独立思考，再查看解析。让每一道题，成为一次主动回忆。</p><div class="rail-rule"/><h3>你的学习节奏</h3><ul class="study-steps"><li><span>1</span><div><strong>选一个主题</strong><p>从今天最想理解的内容开始</p></div></li><li><span>2</span><div><strong>专注完成练习</strong><p>答案会在提交后揭晓</p></div></li><li><span>3</span><div><strong>回顾与修正</strong><p>在学习记录中重看错题</p></div></li></ul></section><section v-if="home" class="rail-recent"><div class="section-head"><h3>最近练习</h3><Icon name="history"/></div><template v-if="attempts.length"><RouterLink v-for="attempt in attempts.slice(0,3)" :key="attempt.id" :to="`/history?attempt=${attempt.id}`" class="recent-item"><strong>{{attempt.setTitle}}</strong><span>{{date(attempt.createdAt)}} · {{scoreLabel(attempt)}}</span></RouterLink></template><p v-else class="muted">还没有练习记录<br/>完成一次练习后，在这里接着回顾</p><RouterLink to="/history" class="text-button">查看学习记录<Icon name="right"/></RouterLink></section><div class="rail-note"><Icon name="lock"/><p>访客也能开始学习<br/><button v-if="!user?.email" class="text-button" @click="authOpen=true">绑定账户，保留自己的空间</button><span v-else>学习内容保存在你的账户中</span></p></div></aside></div></div></template>
+<template>
+<div class="page-container">
+  <header class="page-heading">
+    <div><h1>{{home?'学习工作台':library?'我的题库':'发现题集'}}</h1><p>{{home?'继续练习 或整理一份新的题集':library?'管理自己创建和收藏的题集':'浏览公开题集 保存或复制到自己的题库'}}</p></div>
+    <RouterLink v-if="home" to="/documents" class="button"><Icon name="document"/>导入教材</RouterLink>
+    <RouterLink v-else to="/sets/new" class="button primary"><Icon name="plus"/>创建题集</RouterLink>
+  </header>
+  <div class="workbench-grid" :class="{'collection-full':!home}">
+    <div class="main-column">
+      <section v-if="home" class="study-feature">
+        <div class="feature-content"><span class="feature-label"><span class="status-dot"/>{{resumed?'上次未完成':'从这份题集开始'}}</span><h2>{{featured?.title||'还没有可练习的题集'}}</h2><p>{{featured?`${featured.topic||'综合学习'} · ${featured.questionCount} 道题`:'创建题集 或从公开题集开始'}}</p></div>
+        <RouterLink :to="featured?`/practice/${featured.id}`:'/sets/new'" class="button primary">{{resumed?'继续练习':featured?'开始练习':'创建题集'}}<Icon name="right"/></RouterLink>
+      </section>
+      <div v-if="home" class="section-head collection-heading"><h2>按主题筛选</h2><RouterLink to="/discover" class="text-button">全部题集<Icon name="right"/></RouterLink></div>
+      <div v-if="home&&topics.length" class="topic-collections"><button v-for="item in topics.slice(0,3)" :key="item" :class="{selected:topic===item}" :aria-pressed="topic===item" @click="topic=topic===item?'':item"><Icon name="library"/><strong>{{item}}</strong><span>{{sets.filter(s=>s.topic===item).length}} 份</span></button></div>
+      <section class="library-section">
+        <div class="section-head"><h2>{{home?'题集':library?'题集列表':'公开题集'}}</h2><span class="muted small">{{filtered.length}} 份题集</span></div>
+        <div class="collection-toolbar">
+          <div v-if="library" class="tabs" aria-label="题库范围" :style="{'--tab-index':scope==='saved'?1:0}"><button :class="{active:scope==='mine'}" :aria-pressed="scope==='mine'" @click="scope='mine';topic=''">我创建的</button><button :class="{active:scope==='saved'}" :aria-pressed="scope==='saved'" @click="scope='saved';topic=''">我收藏的</button></div>
+          <label class="search-field"><Icon name="search"/><input v-model="q" aria-label="搜索题集" placeholder="搜索题集或知识点"/></label><select v-model="topic" aria-label="筛选主题"><option value="">全部主题</option><option v-for="item in topics" :key="item">{{item}}</option></select>
+        </div>
+        <Transition name="fade" mode="out-in">
+        <div v-if="loading" class="loading" role="status">正在获取题集…</div>
+        <div v-else-if="error" class="empty-state"><Icon name="warning"/><h3>题集加载失败</h3><p>{{error}}</p><button class="button" @click="load">重试</button></div>
+        <SetList v-else-if="filtered.length" :sets="filtered"/>
+        <div v-else class="empty-state"><Icon name="library"/><h3>{{q||topic?'没有匹配的题集':'还没有题集'}}</h3><p>{{q||topic?'试试其他关键词 或清除筛选':'创建题集 或从公开题集开始练习'}}</p><button v-if="q||topic" class="button" @click="q='';topic=''">清除筛选</button><RouterLink v-else :to="library&&scope==='saved'?'/discover':'/sets/new'" class="button primary">{{library&&scope==='saved'?'发现题集':'创建题集'}}</RouterLink></div>
+        </Transition>
+      </section>
+    </div>
+    <aside v-if="home" class="context-rail">
+      <section class="rail-recent"><div class="section-head"><h3>最近练习</h3><Icon name="history"/></div><template v-if="attempts.length"><RouterLink v-for="attempt in attempts.slice(0,3)" :key="attempt.id" :to="`/history?attempt=${attempt.id}`" class="recent-item"><strong>{{attempt.setTitle}}</strong><span>{{date(attempt.createdAt)}} · {{scoreLabel(attempt)}}</span></RouterLink></template><p v-else class="muted">暂无练习记录<br/>完成练习后会显示在这里</p><RouterLink to="/history" class="text-button">查看学习记录<Icon name="right"/></RouterLink></section>
+      <section class="rail-shortcuts"><h3>学习工具</h3><RouterLink to="/documents"><Icon name="book"/>查看教材<Icon name="right"/></RouterLink><RouterLink to="/tutor"><Icon name="ai"/>开启教学会话<Icon name="right"/></RouterLink></section>
+      <div class="rail-note"><Icon name="lock"/><p v-if="!user?.email">当前为访客空间<br/><button class="text-button" @click="authOpen=true">绑定账户保留学习记录</button></p><p v-else>内容与记录保存在当前账户</p></div>
+    </aside>
+  </div>
+</div>
+</template>
