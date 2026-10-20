@@ -30,6 +30,7 @@ def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(current_app.config['DATABASE'], timeout=15)
         g.db.row_factory = sqlite3.Row
+        g.db.create_function('unicode_lower', 1, lambda value: value.lower(), deterministic=True)
         g.db.execute('PRAGMA foreign_keys = ON')
     return g.db
 

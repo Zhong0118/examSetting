@@ -163,21 +163,48 @@ def create_app(config=None):
     @app.get('/api/sets')
     def list_sets():
         scope = request.args.get('scope', 'mine')
-        conditions = {'mine': 's.owner_id=?', 'discover': "s.visibility='public'", 'saved': 'EXISTS (SELECT 1 FROM bookmarks b WHERE b.set_id=s.id AND b.user_id=?)'}
+        user_id = g.user['id']
+        saved = 'EXISTS (SELECT 1 FROM bookmarks b WHERE b.set_id=s.id AND b.user_id=?)'
+        conditions = {'mine': ('s.owner_id=?', [user_id]), 'discover': ("s.visibility='public'", []),
+                      'saved': (saved, [user_id]),
+                      'workspace': (f"(s.owner_id=? OR s.visibility='public' OR {saved})", [user_id, user_id])}
         if scope not in conditions:
             abort(400, description='scope 格式不正确')
-        params = [g.user['id']] if scope != 'discover' else []
-        sql = 'SELECT s.*,u.name AS author FROM sets s JOIN users u ON u.id=s.owner_id WHERE '+conditions[scope]
+
+        pagination = {}
+        if 'page' in request.args or 'pageSize' in request.args:
+            for name, default in [('page', '1'), ('pageSize', '12')]:
+                value = request.args.get(name, default)
+                try:
+                    number = int(value)
+                    if number < 1 or not re.fullmatch(r'[0-9]+', value):
+                        raise ValueError
+                except ValueError:
+                    abort(400, description=f'{name} 必须是正整数')
+                pagination[name] = number
+
+        condition, params = conditions[scope]
+        sql = ' FROM sets s JOIN users u ON u.id=s.owner_id WHERE '+condition
         sql += " AND (s.owner_id=? OR s.visibility!='private')"
-        params.append(g.user['id'])
+        params.append(user_id)
         if request.args.get('q'):
-            sql += ' AND (instr(lower(s.title),lower(?))>0 OR instr(lower(s.description),lower(?))>0)'
-            params.extend([request.args['q']] * 2)
+            sql += ' AND (instr(unicode_lower(s.title),unicode_lower(?))>0 OR instr(unicode_lower(s.description),unicode_lower(?))>0 OR instr(unicode_lower(s.topic),unicode_lower(?))>0)'
+            params.extend([request.args['q']] * 3)
+        db = get_db()
+        if pagination:
+            topics = [row['topic'] for row in db.execute('SELECT DISTINCT s.topic'+sql+' ORDER BY s.topic', params) if row['topic']]
         if request.args.get('topic'):
             sql += ' AND s.topic=?'
             params.append(request.args['topic'])
-        rows = get_db().execute(sql+' ORDER BY s.updated_at DESC,s.id', params).fetchall()
-        return jsonify(sets=[summary(row) for row in rows])
+        select = 'SELECT s.*,u.name AS author'+sql+' ORDER BY s.updated_at DESC,s.id'
+        if not pagination:
+            rows = db.execute(select, params).fetchall()
+            return jsonify(sets=[summary(row) for row in rows])
+        total = db.execute('SELECT COUNT(*)'+sql, params).fetchone()[0]
+        page_size = min(pagination['pageSize'], 50)
+        page = min(pagination['page'], max(1, (total + page_size - 1) // page_size))
+        rows = db.execute(select+' LIMIT ? OFFSET ?', params + [page_size, (page - 1) * page_size]).fetchall()
+        return jsonify(sets=[summary(row) for row in rows], total=total, page=page, pageSize=page_size, topics=topics)
 
     @app.post('/api/sets')
     def create_set():

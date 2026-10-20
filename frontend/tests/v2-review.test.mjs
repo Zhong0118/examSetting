@@ -51,8 +51,10 @@ test('editor late quality result is stale after edits and bound quote is preserv
  const saved=JSON.parse(localStorage.getItem('examhub:editor:old:S'));assert.equal(saved.form.questions[0].citation.page,2);assert.equal(saved.form.questions[0].source,'second page')
 })
 test('detail rejects report from newer version, reloads visible set and requires recheck',async()=>{
- const old={id:'S',version:1,questions:[{id:'old'}]},latest={id:'S',version:2,questions:[{id:'new1'},{id:'new2'}]},report={total:2,items:[]};let reads=0;const notices=[]
- const vm=await script('views/DetailView.vue',{useRoute:()=>({params:{id:'S'}}),useRouter:()=>({}),api:{set:async()=>({set:reads++?latest:old}),setQuality:async()=>({report,version:2})},message,notify:m=>notices.push(m)},['load','checkQuality','set','quality'])
+ const {filterQuestions}=await script('lib/question-browser.ts',{},['filterQuestions'])
+ const question=id=>({id,type:'short',prompt:id,options:[],topic:'',source:''})
+ const old={id:'S',version:1,questions:[question('old')]},latest={id:'S',version:2,questions:[question('new1'),question('new2')]},report={total:2,items:[]};let reads=0;const notices=[]
+ const vm=await script('views/DetailView.vue',{filterQuestions,useRoute:()=>({params:{id:'S'}}),useRouter:()=>({}),api:{set:async()=>({set:reads++?latest:old}),setQuality:async()=>({report,version:2})},message,notify:m=>notices.push(m)},['load','checkQuality','set','quality'])
  await vm.load();await vm.checkQuality();assert.equal(vm.quality.value,undefined);assert.equal(vm.set.value.version,2);assert.equal(notices.length,1)
  await vm.checkQuality();assert.equal(vm.quality.value.total,2)
 })

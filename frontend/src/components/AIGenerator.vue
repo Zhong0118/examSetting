@@ -5,7 +5,7 @@ import { message, user } from '../lib/state'
 import Icon from './Icon.vue'
 import DocumentRange, { type PdfSelection } from './DocumentRange.vue'
 import QualityPanel from './QualityPanel.vue'
-const props=defineProps<{title:string;topic:string;initialSelection?:PdfSelection}>(), emit=defineEmits<{import:[questions:Question[]]}>()
+const props=defineProps<{title:string;topic:string;initialSelection?:PdfSelection}>(), emit=defineEmits<{import:[questions:Question[],acknowledge:(accepted:boolean)=>void]}>()
 const source=ref(''), count=ref(5), config=ref<AIConfig>(), job=ref<Job>(), error=ref(''), busy=ref(false), imported=ref(false)
 const sourceMode=ref(props.initialSelection?.documentId?'pdf':'text'),pdfSelection=ref<PdfSelection>(props.initialSelection||{documentId:'',startPage:1,endPage:1}),documentError=ref('请选择教材')
 const active=computed(()=>job.value?.status==='queued'||job.value?.status==='running')
@@ -38,7 +38,7 @@ async function cancel(){
   catch(e){if(!disposed&&token===generation){error.value=message(e);schedule()}}
   finally{if(!disposed&&token===generation)busy.value=false}
 }
-function importQuestions(){if(job.value?.status!=='completed'||imported.value)return;emit('import',job.value.questions.map(q=>({...q,id:crypto.randomUUID()})));imported.value=true;try{localStorage.removeItem(storageKey)}catch{}}
+function importQuestions(){if(job.value?.status!=='completed'||imported.value)return;emit('import',job.value.questions.map(q=>({...q,id:crypto.randomUUID()})),accepted=>{if(!accepted)return;imported.value=true;try{localStorage.removeItem(storageKey)}catch{}})}
 onMounted(async()=>{
   const token=generation
   try{const settings=await api.config();if(disposed||token!==generation)return;config.value=settings;const key=localStorage.getItem(storageKey);if(key){const result=await api.job(key);if(disposed||token!==generation)return;job.value=result.job;schedule()}}
