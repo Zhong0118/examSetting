@@ -3,6 +3,7 @@ export type Visibility = 'private' | 'unlisted' | 'public'
 export interface Question { id: string; type: 'single' | 'short'; prompt: string; options: string[]; answer?: string; explanation?: string; source: string; topic: string; citation?: Citation | null }
 export type PracticeQuestion = Omit<Question, 'answer' | 'explanation' | 'source' | 'citation'>
 export interface SetSummary { id: string; title: string; description: string; topic: string; visibility: Visibility; version: number; questionCount: number; author: string; ownerId: string; isOwner: boolean; bookmarked: boolean; updatedAt: string; sourceSetId: string | null }
+export interface SetPage { sets: SetSummary[]; total: number; page: number; pageSize: number; topics: string[] }
 export interface SetDetail extends SetSummary { questions: Question[] }
 export interface SetInput { title: string; description: string; topic: string; visibility: Visibility; questions: Question[]; version?: number }
 export interface Result extends Question { userAnswer: string; correct: boolean | null; questionId: string }
@@ -39,6 +40,7 @@ export const api = {
   auth: (mode: 'login' | 'register', data: {name?: string; email: string; password: string}) => request<{user: User}>(`/auth/${mode}`, 'POST', data),
   logout: () => request<{user: User}>('/auth/logout', 'POST'),
   sets: (scope = 'discover', q = '', topic = '') => request<{sets: SetSummary[]}>(`/sets?${new URLSearchParams({scope,q,topic})}`),
+  setsPage: (scope = 'discover', options: {q?: string; topic?: string; page?: number; pageSize?: number} = {}) => request<SetPage>(`/sets?${new URLSearchParams({scope, q: options.q ?? '', topic: options.topic ?? '', page: String(options.page ?? 1), pageSize: String(options.pageSize ?? 12)})}`),
   set: (key: string) => request<{set: SetDetail}>(`/sets/${id(key)}`),
   save: (data: SetInput, key?: string) => request<{set: SetDetail}>(key ? `/sets/${id(key)}` : '/sets', key ? 'PUT' : 'POST', data),
   delete: (key: string) => request<{ok: boolean}>(`/sets/${id(key)}`, 'DELETE'),
