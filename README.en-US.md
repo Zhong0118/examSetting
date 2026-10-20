@@ -1,4 +1,6 @@
-
+> **Historical translation**
+>
+> This translation documents the original examSetting release, before the ExamHub workbench rebuild. The current application, installation steps, technology stack, pagination, and evaluation evidence are described in the [current ExamHub README](README.md). The instructions below are retained as historical documentation.
 
 # examSetting
 
