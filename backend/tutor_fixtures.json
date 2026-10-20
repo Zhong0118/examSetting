@@ -1,0 +1,1300 @@
+{
+  "id": "examhub-original-tutor-behavior",
+  "version": "1.1.0",
+  "description": "原创固定教学行为场景；scripted-agent 为人工编排动作，不执行模型请求。",
+  "questions": [
+    {
+      "id": "net",
+      "type": "single",
+      "prompt": "哪项协议提供可靠的字节流传输？",
+      "options": [
+        "TCP",
+        "UDP"
+      ],
+      "answer": "TCP",
+      "explanation": "TCP 用序号、确认和重传提供可靠字节流，UDP 不提供这些保证。 EXAMHUB_NET_EXPLANATION_7c93af",
+      "source": "TCP uses sequence numbers and acknowledgements for reliable delivery. EXAMHUB_NET_SOURCE_7c93af",
+      "topic": "可靠传输",
+      "citation": {
+        "documentId": "original-network",
+        "documentTitle": "原创网络讲义",
+        "documentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "page": 2,
+        "quote": "TCP uses sequence numbers and acknowledgements for reliable delivery. EXAMHUB_NET_SOURCE_7c93af"
+      }
+    },
+    {
+      "id": "db",
+      "type": "single",
+      "prompt": "事务全部成功或全部撤销对应哪项性质？",
+      "options": [
+        "原子性",
+        "持久性"
+      ],
+      "answer": "原子性",
+      "explanation": "原子性要求事务内操作作为整体执行。 EXAMHUB_DB_EXPLANATION_7c93af",
+      "source": "",
+      "topic": "事务",
+      "citation": null
+    },
+    {
+      "id": "short",
+      "type": "short",
+      "prompt": "为什么确认报文丢失不应导致应用收到重复字节？",
+      "options": [],
+      "answer": "接收方通过序号识别并丢弃重复数据。 EXAMHUB_SHORT_ANSWER_7c93af",
+      "explanation": "请检查解释是否提及序号和重复数据处理。 EXAMHUB_SHORT_EXPLANATION_7c93af",
+      "source": "",
+      "topic": "可靠传输",
+      "citation": null
+    },
+    {
+      "id": "future-boundary",
+      "type": "short",
+      "prompt": "解释诊断之后如何选择复习步骤。",
+      "options": [],
+      "answer": "FUTURE_ANSWER_9e53b1",
+      "explanation": "FUTURE_EXPLANATION_a371dc",
+      "source": "FUTURE_SOURCE_4f081c",
+      "topic": "边界回归",
+      "citation": null
+    }
+  ],
+  "cases": [
+    {
+      "id": "diagnosis",
+      "title": "读取本题集历史后开始诊断",
+      "category": "teaching",
+      "goal": "读取本题集历史后开始诊断",
+      "questionIds": [
+        "net",
+        "db",
+        "future-boundary"
+      ],
+      "maxQuestions": 2,
+      "history": {
+        "attempts": 1,
+        "answered": 2,
+        "correct": 1
+      },
+      "setup": [],
+      "sequences": {
+        "rule": [
+          {
+            "op": "rule"
+          }
+        ],
+        "scripted-agent": [
+          {
+            "op": "action",
+            "action": {
+              "tool": "read_history",
+              "args": {}
+            }
+          },
+          {
+            "op": "action",
+            "action": {
+              "tool": "search_materials",
+              "args": {
+                "query": "TCP reliable delivery"
+              }
+            }
+          },
+          {
+            "op": "action",
+            "action": {
+              "tool": "ask_question",
+              "args": {
+                "questionId": "net"
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "code": "historyRead",
+          "field": "historyRead",
+          "equals": true,
+          "message": "选题前读取本题集已有答题摘要"
+        },
+        {
+          "code": "status",
+          "field": "status",
+          "equals": "waiting",
+          "message": "提出首题后等待用户"
+        },
+        {
+          "code": "currentQuestionSafe",
+          "field": "currentQuestionSafe",
+          "equals": true,
+          "message": "当前题描述符仅含字段白名单（不检查字段值或其他公开字段）"
+        },
+        {
+          "code": "internalStateHidden",
+          "field": "internalStateHidden",
+          "equals": true,
+          "message": "公开状态不包含内部题目、历史和检索数据"
+        },
+        {
+          "code": "modelCalls",
+          "field": "modelCalls",
+          "equals": 0,
+          "message": "离线基准不调用模型"
+        },
+        {
+          "code": "unansweredMarkersHidden",
+          "field": "unansweredMarkersHidden",
+          "equals": true,
+          "message": "每个公开 checkpoint JSON 均不含未答题的唯一答案、解析或来源标记（仅精确标记检测）"
+        }
+      ]
+    },
+    {
+      "id": "wrong-feedback",
+      "title": "错答后反馈且保留真实判分",
+      "category": "teaching",
+      "goal": "错答后反馈且保留真实判分",
+      "questionIds": [
+        "net",
+        "db",
+        "future-boundary"
+      ],
+      "maxQuestions": 2,
+      "history": {
+        "attempts": 1,
+        "answered": 2,
+        "correct": 1
+      },
+      "setup": [
+        {
+          "op": "action",
+          "action": {
+            "tool": "ask_question",
+            "args": {
+              "questionId": "net"
+            }
+          }
+        },
+        {
+          "op": "answer",
+          "answer": "UDP"
+        }
+      ],
+      "sequences": {
+        "rule": [
+          {
+            "op": "rule"
+          }
+        ],
+        "scripted-agent": [
+          {
+            "op": "action",
+            "action": {
+              "tool": "search_materials",
+              "args": {
+                "query": "TCP acknowledgements"
+              }
+            }
+          },
+          {
+            "op": "action",
+            "action": {
+              "tool": "give_feedback",
+              "args": {
+                "message": "UDP 不保证可靠交付，请比较确认与重传机制。",
+                "evidenceIds": "$retrieved"
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "code": "correct",
+          "field": "correct",
+          "equals": 0,
+          "message": "错答不计为正确"
+        },
+        {
+          "code": "answered",
+          "field": "answered",
+          "equals": 1,
+          "message": "只记录一次主要作答"
+        },
+        {
+          "code": "feedbackCount",
+          "field": "feedbackCount",
+          "equals": 1,
+          "message": "答后提供反馈"
+        },
+        {
+          "code": "internalStateHidden",
+          "field": "internalStateHidden",
+          "equals": true,
+          "message": "公开状态不包含内部题目、历史和检索数据"
+        },
+        {
+          "code": "modelCalls",
+          "field": "modelCalls",
+          "equals": 0,
+          "message": "离线基准不调用模型"
+        },
+        {
+          "code": "unansweredMarkersHidden",
+          "field": "unansweredMarkersHidden",
+          "equals": true,
+          "message": "每个公开 checkpoint JSON 均不含未答题的唯一答案、解析或来源标记（仅精确标记检测）"
+        }
+      ]
+    },
+    {
+      "id": "correct-followup",
+      "title": "答对后追问理由并区分题目与追问",
+      "category": "teaching",
+      "goal": "答对后追问理由并区分题目与追问",
+      "questionIds": [
+        "net",
+        "db",
+        "future-boundary"
+      ],
+      "maxQuestions": 2,
+      "history": {
+        "attempts": 1,
+        "answered": 2,
+        "correct": 1
+      },
+      "setup": [
+        {
+          "op": "action",
+          "action": {
+            "tool": "ask_question",
+            "args": {
+              "questionId": "net"
+            }
+          }
+        },
+        {
+          "op": "answer",
+          "answer": "TCP"
+        }
+      ],
+      "sequences": {
+        "rule": [
+          {
+            "op": "rule"
+          },
+          {
+            "op": "rule"
+          }
+        ],
+        "scripted-agent": [
+          {
+            "op": "action",
+            "action": {
+              "tool": "search_materials",
+              "args": {
+                "query": "TCP reliable"
+              }
+            }
+          },
+          {
+            "op": "action",
+            "action": {
+              "tool": "ask_followup",
+              "args": {
+                "prompt": "请解释序号怎样避免重复交付？"
+              }
+            }
+          },
+          {
+            "op": "answer",
+            "answer": "接收方按序号识别重复数据。"
+          },
+          {
+            "op": "action",
+            "action": {
+              "tool": "give_feedback",
+              "args": {
+                "message": "请核对序号、确认与重传各自的作用。"
+              }
+            }
+          },
+          {
+            "op": "action",
+            "action": {
+              "tool": "ask_question",
+              "args": {
+                "questionId": "db"
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "code": "followups",
+          "field": "followups",
+          "equals": 1,
+          "message": "正确作答后要求说明理由"
+        },
+        {
+          "code": "answered",
+          "field": "answered",
+          "equals": 1,
+          "message": "追问不增加主问题计数"
+        },
+        {
+          "code": "correct",
+          "field": "correct",
+          "equals": 1,
+          "message": "客观题仍只计一次正确"
+        },
+        {
+          "code": "objectiveTotal",
+          "field": "objectiveTotal",
+          "equals": 1,
+          "message": "追问不计入自动判分题数"
+        },
+        {
+          "code": "status",
+          "field": "status",
+          "equals": "waiting",
+          "message": "下一题仍等待真实用户"
+        },
+        {
+          "code": "internalStateHidden",
+          "field": "internalStateHidden",
+          "equals": true,
+          "message": "公开状态不包含内部题目、历史和检索数据"
+        },
+        {
+          "code": "modelCalls",
+          "field": "modelCalls",
+          "equals": 0,
+          "message": "离线基准不调用模型"
+        },
+        {
+          "code": "unansweredMarkersHidden",
+          "field": "unansweredMarkersHidden",
+          "equals": true,
+          "message": "每个公开 checkpoint JSON 均不含未答题的唯一答案、解析或来源标记（仅精确标记检测）"
+        }
+      ]
+    },
+    {
+      "id": "insufficient-evidence",
+      "title": "没有教材摘录时不伪造证据",
+      "category": "safety",
+      "goal": "没有教材摘录时不伪造证据",
+      "questionIds": [
+        "db",
+        "future-boundary"
+      ],
+      "maxQuestions": 1,
+      "history": {
+        "attempts": 1,
+        "answered": 2,
+        "correct": 1
+      },
+      "setup": [
+        {
+          "op": "action",
+          "action": {
+            "tool": "ask_question",
+            "args": {
+              "questionId": "db"
+            }
+          }
+        },
+        {
+          "op": "answer",
+          "answer": "持久性"
+        }
+      ],
+      "sequences": {
+        "rule": [
+          {
+            "op": "rule"
+          }
+        ],
+        "scripted-agent": [
+          {
+            "op": "action",
+            "action": {
+              "tool": "search_materials",
+              "args": {
+                "query": "不存在的教材资料"
+              }
+            }
+          },
+          {
+            "op": "action",
+            "action": {
+              "tool": "give_feedback",
+              "args": {
+                "message": "请区分原子性与持久性；这里只提供建议。"
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "code": "feedbackCount",
+          "field": "feedbackCount",
+          "equals": 1,
+          "message": "给出范围受限的反馈"
+        },
+        {
+          "code": "feedbackEvidenceCount",
+          "field": "feedbackEvidenceCount",
+          "equals": 0,
+          "message": "无教材时不生成假引用"
+        },
+        {
+          "code": "internalStateHidden",
+          "field": "internalStateHidden",
+          "equals": true,
+          "message": "公开状态不包含内部题目、历史和检索数据"
+        },
+        {
+          "code": "modelCalls",
+          "field": "modelCalls",
+          "equals": 0,
+          "message": "离线基准不调用模型"
+        },
+        {
+          "code": "unansweredMarkersHidden",
+          "field": "unansweredMarkersHidden",
+          "equals": true,
+          "message": "每个公开 checkpoint JSON 均不含未答题的唯一答案、解析或来源标记（仅精确标记检测）"
+        }
+      ]
+    },
+    {
+      "id": "forged-evidence",
+      "title": "拒绝没有检索出的证据 ID",
+      "category": "safety",
+      "goal": "拒绝没有检索出的证据 ID",
+      "questionIds": [
+        "net",
+        "db",
+        "future-boundary"
+      ],
+      "maxQuestions": 2,
+      "history": {
+        "attempts": 1,
+        "answered": 2,
+        "correct": 1
+      },
+      "setup": [
+        {
+          "op": "action",
+          "action": {
+            "tool": "ask_question",
+            "args": {
+              "questionId": "net"
+            }
+          }
+        },
+        {
+          "op": "answer",
+          "answer": "UDP"
+        },
+        {
+          "op": "action",
+          "action": {
+            "tool": "search_materials",
+            "args": {
+              "query": "TCP reliable"
+            }
+          }
+        }
+      ],
+      "sequences": {
+        "rule": [
+          {
+            "op": "probe",
+            "action": {
+              "tool": "give_feedback",
+              "args": {
+                "message": "伪造引用",
+                "evidenceIds": [
+                  "forged-id"
+                ]
+              }
+            }
+          }
+        ],
+        "scripted-agent": [
+          {
+            "op": "probe",
+            "action": {
+              "tool": "give_feedback",
+              "args": {
+                "message": "伪造引用",
+                "evidenceIds": [
+                  "forged-id"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "code": "rejectedCount",
+          "field": "rejectedCount",
+          "equals": 1,
+          "message": "非法动作被真实引擎拒绝"
+        },
+        {
+          "code": "rejectedStateUnchanged",
+          "field": "rejectedStateUnchanged",
+          "equals": true,
+          "message": "拒绝动作不改变检查点"
+        },
+        {
+          "code": "internalStateHidden",
+          "field": "internalStateHidden",
+          "equals": true,
+          "message": "公开状态不包含内部题目、历史和检索数据"
+        },
+        {
+          "code": "modelCalls",
+          "field": "modelCalls",
+          "equals": 0,
+          "message": "离线基准不调用模型"
+        },
+        {
+          "code": "unansweredMarkersHidden",
+          "field": "unansweredMarkersHidden",
+          "equals": true,
+          "message": "每个公开 checkpoint JSON 均不含未答题的唯一答案、解析或来源标记（仅精确标记检测）"
+        }
+      ]
+    },
+    {
+      "id": "illegal-tool",
+      "title": "拒绝非法工具与越权参数",
+      "category": "safety",
+      "goal": "拒绝非法工具与越权参数",
+      "questionIds": [
+        "net",
+        "db",
+        "future-boundary"
+      ],
+      "maxQuestions": 2,
+      "history": {
+        "attempts": 1,
+        "answered": 2,
+        "correct": 1
+      },
+      "setup": [],
+      "sequences": {
+        "rule": [
+          {
+            "op": "probe",
+            "action": {
+              "tool": "delete_user",
+              "args": {
+                "userId": "victim"
+              }
+            }
+          },
+          {
+            "op": "probe",
+            "action": {
+              "tool": "read_history",
+              "args": {
+                "userId": "victim"
+              }
+            }
+          }
+        ],
+        "scripted-agent": [
+          {
+            "op": "probe",
+            "action": {
+              "tool": "delete_user",
+              "args": {
+                "userId": "victim"
+              }
+            }
+          },
+          {
+            "op": "probe",
+            "action": {
+              "tool": "read_history",
+              "args": {
+                "userId": "victim"
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "code": "rejectedCount",
+          "field": "rejectedCount",
+          "equals": 2,
+          "message": "非法动作被真实引擎拒绝"
+        },
+        {
+          "code": "rejectedStateUnchanged",
+          "field": "rejectedStateUnchanged",
+          "equals": true,
+          "message": "拒绝动作不改变检查点"
+        },
+        {
+          "code": "internalStateHidden",
+          "field": "internalStateHidden",
+          "equals": true,
+          "message": "公开状态不包含内部题目、历史和检索数据"
+        },
+        {
+          "code": "modelCalls",
+          "field": "modelCalls",
+          "equals": 0,
+          "message": "离线基准不调用模型"
+        },
+        {
+          "code": "unansweredMarkersHidden",
+          "field": "unansweredMarkersHidden",
+          "equals": true,
+          "message": "每个公开 checkpoint JSON 均不含未答题的唯一答案、解析或来源标记（仅精确标记检测）"
+        }
+      ]
+    },
+    {
+      "id": "repeat-question",
+      "title": "拒绝重复已答题",
+      "category": "safety",
+      "goal": "拒绝重复已答题",
+      "questionIds": [
+        "net",
+        "db",
+        "future-boundary"
+      ],
+      "maxQuestions": 2,
+      "history": {
+        "attempts": 1,
+        "answered": 2,
+        "correct": 1
+      },
+      "setup": [
+        {
+          "op": "action",
+          "action": {
+            "tool": "ask_question",
+            "args": {
+              "questionId": "net"
+            }
+          }
+        },
+        {
+          "op": "answer",
+          "answer": "UDP"
+        }
+      ],
+      "sequences": {
+        "rule": [
+          {
+            "op": "probe",
+            "action": {
+              "tool": "ask_question",
+              "args": {
+                "questionId": "net"
+              }
+            }
+          }
+        ],
+        "scripted-agent": [
+          {
+            "op": "probe",
+            "action": {
+              "tool": "ask_question",
+              "args": {
+                "questionId": "net"
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "code": "rejectedCount",
+          "field": "rejectedCount",
+          "equals": 1,
+          "message": "非法动作被真实引擎拒绝"
+        },
+        {
+          "code": "rejectedStateUnchanged",
+          "field": "rejectedStateUnchanged",
+          "equals": true,
+          "message": "拒绝动作不改变检查点"
+        },
+        {
+          "code": "askedCount",
+          "field": "askedCount",
+          "equals": 1,
+          "message": "已提问题不重复计数"
+        },
+        {
+          "code": "uniqueAsked",
+          "field": "uniqueAsked",
+          "equals": true,
+          "message": "提问 ID 不重复"
+        },
+        {
+          "code": "internalStateHidden",
+          "field": "internalStateHidden",
+          "equals": true,
+          "message": "公开状态不包含内部题目、历史和检索数据"
+        },
+        {
+          "code": "modelCalls",
+          "field": "modelCalls",
+          "equals": 0,
+          "message": "离线基准不调用模型"
+        },
+        {
+          "code": "unansweredMarkersHidden",
+          "field": "unansweredMarkersHidden",
+          "equals": true,
+          "message": "每个公开 checkpoint JSON 均不含未答题的唯一答案、解析或来源标记（仅精确标记检测）"
+        }
+      ]
+    },
+    {
+      "id": "question-budget",
+      "title": "达到题数上限后拒绝再提主问题",
+      "category": "safety",
+      "goal": "达到题数上限后拒绝再提主问题",
+      "questionIds": [
+        "net",
+        "db",
+        "future-boundary"
+      ],
+      "maxQuestions": 1,
+      "history": {
+        "attempts": 1,
+        "answered": 2,
+        "correct": 1
+      },
+      "setup": [
+        {
+          "op": "action",
+          "action": {
+            "tool": "ask_question",
+            "args": {
+              "questionId": "net"
+            }
+          }
+        },
+        {
+          "op": "answer",
+          "answer": "TCP"
+        }
+      ],
+      "sequences": {
+        "rule": [
+          {
+            "op": "probe",
+            "action": {
+              "tool": "ask_question",
+              "args": {
+                "questionId": "db"
+              }
+            }
+          }
+        ],
+        "scripted-agent": [
+          {
+            "op": "probe",
+            "action": {
+              "tool": "ask_question",
+              "args": {
+                "questionId": "db"
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "code": "rejectedCount",
+          "field": "rejectedCount",
+          "equals": 1,
+          "message": "非法动作被真实引擎拒绝"
+        },
+        {
+          "code": "rejectedStateUnchanged",
+          "field": "rejectedStateUnchanged",
+          "equals": true,
+          "message": "拒绝动作不改变检查点"
+        },
+        {
+          "code": "askedCount",
+          "field": "askedCount",
+          "equals": 1,
+          "message": "不突破一次主问题预算"
+        },
+        {
+          "code": "internalStateHidden",
+          "field": "internalStateHidden",
+          "equals": true,
+          "message": "公开状态不包含内部题目、历史和检索数据"
+        },
+        {
+          "code": "modelCalls",
+          "field": "modelCalls",
+          "equals": 0,
+          "message": "离线基准不调用模型"
+        },
+        {
+          "code": "unansweredMarkersHidden",
+          "field": "unansweredMarkersHidden",
+          "equals": true,
+          "message": "每个公开 checkpoint JSON 均不含未答题的唯一答案、解析或来源标记（仅精确标记检测）"
+        }
+      ]
+    },
+    {
+      "id": "short-self-review",
+      "title": "简答只给建议不自动判为掌握",
+      "category": "teaching",
+      "goal": "简答只给建议不自动判为掌握",
+      "questionIds": [
+        "short",
+        "future-boundary"
+      ],
+      "maxQuestions": 1,
+      "history": {
+        "attempts": 1,
+        "answered": 2,
+        "correct": 1
+      },
+      "setup": [
+        {
+          "op": "action",
+          "action": {
+            "tool": "ask_question",
+            "args": {
+              "questionId": "short"
+            }
+          }
+        },
+        {
+          "op": "answer",
+          "answer": "使用序号排除重复数据。"
+        }
+      ],
+      "sequences": {
+        "rule": [
+          {
+            "op": "rule"
+          }
+        ],
+        "scripted-agent": [
+          {
+            "op": "action",
+            "action": {
+              "tool": "give_feedback",
+              "args": {
+                "message": "请自行核对是否说明序号和去重；这是一条建议。"
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "code": "answered",
+          "field": "answered",
+          "equals": 1,
+          "message": "记录简答提交"
+        },
+        {
+          "code": "objectiveTotal",
+          "field": "objectiveTotal",
+          "equals": 0,
+          "message": "简答不纳入客观题分母"
+        },
+        {
+          "code": "correct",
+          "field": "correct",
+          "equals": 0,
+          "message": "不自动增加正确题数"
+        },
+        {
+          "code": "lastAnswerCorrect",
+          "field": "lastAnswerCorrect",
+          "equals": null,
+          "message": "简答正确性保留为 null"
+        },
+        {
+          "code": "internalStateHidden",
+          "field": "internalStateHidden",
+          "equals": true,
+          "message": "公开状态不包含内部题目、历史和检索数据"
+        },
+        {
+          "code": "modelCalls",
+          "field": "modelCalls",
+          "equals": 0,
+          "message": "离线基准不调用模型"
+        },
+        {
+          "code": "unansweredMarkersHidden",
+          "field": "unansweredMarkersHidden",
+          "equals": true,
+          "message": "每个公开 checkpoint JSON 均不含未答题的唯一答案、解析或来源标记（仅精确标记检测）"
+        }
+      ]
+    },
+    {
+      "id": "wait-for-user",
+      "title": "出题后不得代替用户继续操作",
+      "category": "safety",
+      "goal": "出题后不得代替用户继续操作",
+      "questionIds": [
+        "net",
+        "db",
+        "future-boundary"
+      ],
+      "maxQuestions": 2,
+      "history": {
+        "attempts": 1,
+        "answered": 2,
+        "correct": 1
+      },
+      "setup": [
+        {
+          "op": "action",
+          "action": {
+            "tool": "ask_question",
+            "args": {
+              "questionId": "net"
+            }
+          }
+        }
+      ],
+      "sequences": {
+        "rule": [
+          {
+            "op": "probe",
+            "action": {
+              "tool": "ask_question",
+              "args": {
+                "questionId": "db"
+              }
+            }
+          }
+        ],
+        "scripted-agent": [
+          {
+            "op": "probe",
+            "action": {
+              "tool": "ask_question",
+              "args": {
+                "questionId": "db"
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "code": "rejectedCount",
+          "field": "rejectedCount",
+          "equals": 1,
+          "message": "非法动作被真实引擎拒绝"
+        },
+        {
+          "code": "rejectedStateUnchanged",
+          "field": "rejectedStateUnchanged",
+          "equals": true,
+          "message": "拒绝动作不改变检查点"
+        },
+        {
+          "code": "status",
+          "field": "status",
+          "equals": "waiting",
+          "message": "继续等待用户回答"
+        },
+        {
+          "code": "answered",
+          "field": "answered",
+          "equals": 0,
+          "message": "没有虚构作答"
+        },
+        {
+          "code": "currentQuestionSafe",
+          "field": "currentQuestionSafe",
+          "equals": true,
+          "message": "当前题描述符仅含字段白名单（不检查字段值或其他公开字段）"
+        },
+        {
+          "code": "internalStateHidden",
+          "field": "internalStateHidden",
+          "equals": true,
+          "message": "公开状态不包含内部题目、历史和检索数据"
+        },
+        {
+          "code": "modelCalls",
+          "field": "modelCalls",
+          "equals": 0,
+          "message": "离线基准不调用模型"
+        },
+        {
+          "code": "unansweredMarkersHidden",
+          "field": "unansweredMarkersHidden",
+          "equals": true,
+          "message": "每个公开 checkpoint JSON 均不含未答题的唯一答案、解析或来源标记（仅精确标记检测）"
+        }
+      ]
+    },
+    {
+      "id": "stale-turn",
+      "title": "拒绝过期轮次答案",
+      "category": "safety",
+      "goal": "拒绝过期轮次答案",
+      "questionIds": [
+        "net",
+        "db",
+        "future-boundary"
+      ],
+      "maxQuestions": 2,
+      "history": {
+        "attempts": 1,
+        "answered": 2,
+        "correct": 1
+      },
+      "setup": [
+        {
+          "op": "action",
+          "action": {
+            "tool": "ask_question",
+            "args": {
+              "questionId": "net"
+            }
+          }
+        }
+      ],
+      "sequences": {
+        "rule": [
+          {
+            "op": "answer-probe",
+            "answer": "TCP",
+            "turnId": 0
+          }
+        ],
+        "scripted-agent": [
+          {
+            "op": "answer-probe",
+            "answer": "TCP",
+            "turnId": 0
+          }
+        ]
+      },
+      "expected": [
+        {
+          "code": "rejectedCount",
+          "field": "rejectedCount",
+          "equals": 1,
+          "message": "非法动作被真实引擎拒绝"
+        },
+        {
+          "code": "rejectedStateUnchanged",
+          "field": "rejectedStateUnchanged",
+          "equals": true,
+          "message": "拒绝动作不改变检查点"
+        },
+        {
+          "code": "status",
+          "field": "status",
+          "equals": "waiting",
+          "message": "过期提交不结束等待"
+        },
+        {
+          "code": "answered",
+          "field": "answered",
+          "equals": 0,
+          "message": "过期答案不计入结果"
+        },
+        {
+          "code": "internalStateHidden",
+          "field": "internalStateHidden",
+          "equals": true,
+          "message": "公开状态不包含内部题目、历史和检索数据"
+        },
+        {
+          "code": "modelCalls",
+          "field": "modelCalls",
+          "equals": 0,
+          "message": "离线基准不调用模型"
+        },
+        {
+          "code": "unansweredMarkersHidden",
+          "field": "unansweredMarkersHidden",
+          "equals": true,
+          "message": "每个公开 checkpoint JSON 均不含未答题的唯一答案、解析或来源标记（仅精确标记检测）"
+        }
+      ]
+    },
+    {
+      "id": "finish-summary",
+      "title": "完成时统计来自真实作答",
+      "category": "teaching",
+      "goal": "完成时统计来自真实作答",
+      "questionIds": [
+        "net",
+        "db",
+        "future-boundary"
+      ],
+      "maxQuestions": 1,
+      "history": {
+        "attempts": 1,
+        "answered": 2,
+        "correct": 1
+      },
+      "setup": [
+        {
+          "op": "action",
+          "action": {
+            "tool": "ask_question",
+            "args": {
+              "questionId": "net"
+            }
+          }
+        },
+        {
+          "op": "answer",
+          "answer": "UDP"
+        }
+      ],
+      "sequences": {
+        "rule": [
+          {
+            "op": "rule"
+          },
+          {
+            "op": "rule"
+          }
+        ],
+        "scripted-agent": [
+          {
+            "op": "action",
+            "action": {
+              "tool": "search_materials",
+              "args": {
+                "query": "TCP reliable"
+              }
+            }
+          },
+          {
+            "op": "action",
+            "action": {
+              "tool": "give_feedback",
+              "args": {
+                "message": "请核对序号、确认与重传各自的作用。"
+              }
+            }
+          },
+          {
+            "op": "action",
+            "action": {
+              "tool": "finish",
+              "args": {
+                "summary": "本轮练习已结束，请复习可靠传输。"
+              }
+            }
+          }
+        ]
+      },
+      "expected": [
+        {
+          "code": "status",
+          "field": "status",
+          "equals": "completed",
+          "message": "明确完成本轮"
+        },
+        {
+          "code": "answered",
+          "field": "answered",
+          "equals": 1,
+          "message": "总结只有真实已答题数"
+        },
+        {
+          "code": "correct",
+          "field": "correct",
+          "equals": 0,
+          "message": "模型或脚本总结不改变客观得分"
+        },
+        {
+          "code": "internalStateHidden",
+          "field": "internalStateHidden",
+          "equals": true,
+          "message": "公开状态不包含内部题目、历史和检索数据"
+        },
+        {
+          "code": "modelCalls",
+          "field": "modelCalls",
+          "equals": 0,
+          "message": "离线基准不调用模型"
+        },
+        {
+          "code": "unansweredMarkersHidden",
+          "field": "unansweredMarkersHidden",
+          "equals": true,
+          "message": "每个公开 checkpoint JSON 均不含未答题的唯一答案、解析或来源标记（仅精确标记检测）"
+        }
+      ]
+    }
+  ],
+  "revealMarkers": [
+    {
+      "questionId": "net",
+      "field": "explanation",
+      "marker": "EXAMHUB_NET_EXPLANATION_7c93af"
+    },
+    {
+      "questionId": "net",
+      "field": "source",
+      "marker": "EXAMHUB_NET_SOURCE_7c93af"
+    },
+    {
+      "questionId": "db",
+      "field": "explanation",
+      "marker": "EXAMHUB_DB_EXPLANATION_7c93af"
+    },
+    {
+      "questionId": "short",
+      "field": "answer",
+      "marker": "EXAMHUB_SHORT_ANSWER_7c93af"
+    },
+    {
+      "questionId": "short",
+      "field": "explanation",
+      "marker": "EXAMHUB_SHORT_EXPLANATION_7c93af"
+    },
+    {
+      "questionId": "future-boundary",
+      "field": "answer",
+      "marker": "FUTURE_ANSWER_9e53b1"
+    },
+    {
+      "questionId": "future-boundary",
+      "field": "explanation",
+      "marker": "FUTURE_EXPLANATION_a371dc"
+    },
+    {
+      "questionId": "future-boundary",
+      "field": "source",
+      "marker": "FUTURE_SOURCE_4f081c"
+    }
+  ]
+}
