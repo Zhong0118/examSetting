@@ -1,0 +1,394 @@
+{
+  "datasetId": "examhub-original-detector-v2-001",
+  "description": "Original authored detector regression cases; true labels denote defects. No third-party dataset or model outputs.",
+  "samples": [
+    {
+      "id": "valid-cited",
+      "label": false,
+      "note": "原创正常单选，引用逐字匹配物理第 2 页。",
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": "Which protocol supplies a reliable byte stream?",
+          "options": [
+            "TCP",
+            "UDP"
+          ],
+          "answer": "TCP",
+          "explanation": "TCP provides ordered bytes and retransmission.",
+          "source": "TCP provides reliable bytes.",
+          "topic": "Networking",
+          "citation": {
+            "documentId": "doc1",
+            "documentTitle": "Original notes",
+            "documentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 2,
+            "quote": "TCP provides reliable bytes."
+          }
+        }
+      ],
+      "pages": {
+        "2": "TCP provides reliable bytes. UDP sends independent datagrams."
+      }
+    },
+    {
+      "id": "valid-short",
+      "label": false,
+      "note": "原创简答，仅断言解析和答案非空，不评判语义。",
+      "questions": [
+        {
+          "id": "q1",
+          "type": "short",
+          "prompt": "Describe a TCP byte stream.",
+          "options": [],
+          "answer": "Ordered bytes.",
+          "explanation": "TCP provides ordered bytes and retransmission.",
+          "source": "TCP provides reliable bytes.",
+          "topic": "Networking",
+          "citation": {
+            "documentId": "doc1",
+            "documentTitle": "Original notes",
+            "documentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 2,
+            "quote": "TCP provides reliable bytes."
+          }
+        }
+      ],
+      "pages": {
+        "2": "TCP provides reliable bytes. UDP sends independent datagrams."
+      }
+    },
+    {
+      "id": "valid-legacy",
+      "label": false,
+      "note": "原创旧版文本题，没有 PDF 引用不是结构缺陷，只警告。",
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": "Which protocol supplies a reliable byte stream?",
+          "options": [
+            "TCP",
+            "UDP"
+          ],
+          "answer": "TCP",
+          "explanation": "TCP provides ordered bytes and retransmission.",
+          "source": "TCP provides reliable bytes.",
+          "topic": "Networking"
+        }
+      ],
+      "pages": null
+    },
+    {
+      "id": "answer-outside-options",
+      "label": true,
+      "note": "答案 ICMP 不在给出的选项中。",
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": "Which protocol supplies a reliable byte stream?",
+          "options": [
+            "TCP",
+            "UDP"
+          ],
+          "answer": "ICMP",
+          "explanation": "TCP provides ordered bytes and retransmission.",
+          "source": "TCP provides reliable bytes.",
+          "topic": "Networking",
+          "citation": {
+            "documentId": "doc1",
+            "documentTitle": "Original notes",
+            "documentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 2,
+            "quote": "TCP provides reliable bytes."
+          }
+        }
+      ],
+      "pages": {
+        "2": "TCP provides reliable bytes. UDP sends independent datagrams."
+      }
+    },
+    {
+      "id": "duplicate-options",
+      "label": true,
+      "note": "TCP 和全角ＴＣＰ规范化后相同，不能唯一选择。",
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": "Which protocol supplies a reliable byte stream?",
+          "options": [
+            "TCP",
+            "ＴＣＰ"
+          ],
+          "answer": "TCP",
+          "explanation": "TCP provides ordered bytes and retransmission.",
+          "source": "TCP provides reliable bytes.",
+          "topic": "Networking",
+          "citation": {
+            "documentId": "doc1",
+            "documentTitle": "Original notes",
+            "documentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 2,
+            "quote": "TCP provides reliable bytes."
+          }
+        }
+      ],
+      "pages": {
+        "2": "TCP provides reliable bytes. UDP sends independent datagrams."
+      }
+    },
+    {
+      "id": "missing-explanation",
+      "label": true,
+      "note": "解析为空。",
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": "Which protocol supplies a reliable byte stream?",
+          "options": [
+            "TCP",
+            "UDP"
+          ],
+          "answer": "TCP",
+          "explanation": "",
+          "source": "TCP provides reliable bytes.",
+          "topic": "Networking",
+          "citation": {
+            "documentId": "doc1",
+            "documentTitle": "Original notes",
+            "documentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 2,
+            "quote": "TCP provides reliable bytes."
+          }
+        }
+      ],
+      "pages": {
+        "2": "TCP provides reliable bytes. UDP sends independent datagrams."
+      }
+    },
+    {
+      "id": "wrong-physical-page",
+      "label": true,
+      "note": "引用指定第 1 页，提供的原文仅在第 2 页。",
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": "Which protocol supplies a reliable byte stream?",
+          "options": [
+            "TCP",
+            "UDP"
+          ],
+          "answer": "TCP",
+          "explanation": "TCP provides ordered bytes and retransmission.",
+          "source": "TCP provides reliable bytes.",
+          "topic": "Networking",
+          "citation": {
+            "documentId": "doc1",
+            "documentTitle": "Original notes",
+            "documentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "quote": "TCP provides reliable bytes."
+          }
+        }
+      ],
+      "pages": {
+        "2": "TCP provides reliable bytes. UDP sends independent datagrams."
+      }
+    },
+    {
+      "id": "invented-quote",
+      "label": true,
+      "note": "source/quote 相同但原页没有此句。",
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": "Which protocol supplies a reliable byte stream?",
+          "options": [
+            "TCP",
+            "UDP"
+          ],
+          "answer": "TCP",
+          "explanation": "TCP provides ordered bytes and retransmission.",
+          "source": "TCP guarantees zero delay.",
+          "topic": "Networking",
+          "citation": {
+            "documentId": "doc1",
+            "documentTitle": "Original notes",
+            "documentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 2,
+            "quote": "TCP guarantees zero delay."
+          }
+        }
+      ],
+      "pages": {
+        "2": "TCP provides reliable bytes. UDP sends independent datagrams."
+      }
+    },
+    {
+      "id": "source-quote-mismatch",
+      "label": true,
+      "note": "source 和 citation.quote 内容不一致。",
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": "Which protocol supplies a reliable byte stream?",
+          "options": [
+            "TCP",
+            "UDP"
+          ],
+          "answer": "TCP",
+          "explanation": "TCP provides ordered bytes and retransmission.",
+          "source": "Unrelated statement.",
+          "topic": "Networking",
+          "citation": {
+            "documentId": "doc1",
+            "documentTitle": "Original notes",
+            "documentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 2,
+            "quote": "TCP provides reliable bytes."
+          }
+        }
+      ],
+      "pages": {
+        "2": "TCP provides reliable bytes. UDP sends independent datagrams."
+      }
+    },
+    {
+      "id": "exact-duplicate",
+      "label": true,
+      "note": "同一题干出现两次，ID 不同。",
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": "Which protocol supplies a reliable byte stream?",
+          "options": [
+            "TCP",
+            "UDP"
+          ],
+          "answer": "TCP",
+          "explanation": "TCP provides ordered bytes and retransmission.",
+          "source": "TCP provides reliable bytes.",
+          "topic": "Networking",
+          "citation": {
+            "documentId": "doc1",
+            "documentTitle": "Original notes",
+            "documentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 2,
+            "quote": "TCP provides reliable bytes."
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": "Which protocol supplies a reliable byte stream?",
+          "options": [
+            "TCP",
+            "UDP"
+          ],
+          "answer": "TCP",
+          "explanation": "TCP provides ordered bytes and retransmission.",
+          "source": "TCP provides reliable bytes.",
+          "topic": "Networking",
+          "citation": {
+            "documentId": "doc1",
+            "documentTitle": "Original notes",
+            "documentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 2,
+            "quote": "TCP provides reliable bytes."
+          }
+        }
+      ],
+      "pages": {
+        "2": "TCP provides reliable bytes. UDP sends independent datagrams."
+      }
+    },
+    {
+      "id": "lexical-duplicate",
+      "label": true,
+      "note": "只在题干末尾加 now，词面高度相似。",
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": "Which protocol supplies a reliable byte stream?",
+          "options": [
+            "TCP",
+            "UDP"
+          ],
+          "answer": "TCP",
+          "explanation": "TCP provides ordered bytes and retransmission.",
+          "source": "TCP provides reliable bytes.",
+          "topic": "Networking",
+          "citation": {
+            "documentId": "doc1",
+            "documentTitle": "Original notes",
+            "documentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 2,
+            "quote": "TCP provides reliable bytes."
+          }
+        },
+        {
+          "id": "q2",
+          "type": "single",
+          "prompt": "Which protocol supplies a reliable byte stream now?",
+          "options": [
+            "TCP",
+            "UDP"
+          ],
+          "answer": "TCP",
+          "explanation": "TCP provides ordered bytes and retransmission.",
+          "source": "TCP provides reliable bytes.",
+          "topic": "Networking",
+          "citation": {
+            "documentId": "doc1",
+            "documentTitle": "Original notes",
+            "documentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 2,
+            "quote": "TCP provides reliable bytes."
+          }
+        }
+      ],
+      "pages": {
+        "2": "TCP provides reliable bytes. UDP sends independent datagrams."
+      }
+    },
+    {
+      "id": "unsupported-factual-answer",
+      "label": true,
+      "note": "故意将 UDP 标为可靠字节流协议；纯规则无法判断该事实错误，预期漏检，非伪造完美分数。",
+      "questions": [
+        {
+          "id": "q1",
+          "type": "single",
+          "prompt": "Which protocol supplies a reliable byte stream?",
+          "options": [
+            "TCP",
+            "UDP"
+          ],
+          "answer": "UDP",
+          "explanation": "UDP provides ordered reliable bytes.",
+          "source": "TCP provides reliable bytes.",
+          "topic": "Networking",
+          "citation": {
+            "documentId": "doc1",
+            "documentTitle": "Original notes",
+            "documentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 2,
+            "quote": "TCP provides reliable bytes."
+          }
+        }
+      ],
+      "pages": {
+        "2": "TCP provides reliable bytes. UDP sends independent datagrams."
+      }
+    }
+  ]
+}
